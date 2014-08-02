@@ -1,6 +1,6 @@
 package com.github.davidmoten.jns;
 
-import java.util.List;
+import java.util.function.Function;
 
 public class Vectors {
 
@@ -8,8 +8,9 @@ public class Vectors {
         return new VectorImpl(east, north, up);
     }
 
-    public static final Vector create(List<Double> list) {
-        return new VectorImpl(list.get(0), list.get(1), list.get(2));
+    public static final Vector create(Function<Direction, Double> f) {
+        return new VectorImpl(f.apply(Direction.EAST), f.apply(Direction.NORTH),
+                f.apply(Direction.UP));
     }
 
 }

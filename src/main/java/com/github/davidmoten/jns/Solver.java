@@ -66,13 +66,14 @@ public class Solver {
     }
 
     private Vector getVelocityGradient2nd(Cell cell, Direction direction) {
-        final Function<Direction, Function<Cell, Double>> vel = d -> {
+        final Function<Direction, Function<Cell, Double>> velocity = d -> {
             return c -> c.velocity().value(d);
         };
-        final Function<Direction, Double> gradient = d -> getGradient(cell, direction,
-                vel.apply(d), DerivativeType.SECOND, Optional.empty());
-        return Vectors.create(gradient.apply(Direction.EAST), gradient.apply(Direction.NORTH),
-                gradient.apply(Direction.UP));
+        final Function<Direction, Double> gradient =
+        // gradient in given direction
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND, Optional.empty());
+
+        return Vectors.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
