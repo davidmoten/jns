@@ -62,12 +62,17 @@ public class Solver {
     }
 
     private double getVelocityLaplacian(Cell cell, Direction direction) {
-        return getVelocityGradient2nd(cell, direction);
+        return getVelocityGradient2nd(cell, direction).sum();
     }
 
-    private double getVelocityGradient2nd(Cell cell, Direction direction) {
-        // TODO Auto-generated method stub
-        return 0;
+    private Vector getVelocityGradient2nd(Cell cell, Direction direction) {
+        final Function<Direction, Function<Cell, Double>> vel = d -> {
+            return c -> c.velocity().value(d);
+        };
+        final Function<Direction, Double> gradient = d -> getGradient(cell, direction,
+                vel.apply(d), DerivativeType.SECOND, Optional.empty());
+        return Vectors.create(gradient.apply(Direction.EAST), gradient.apply(Direction.NORTH),
+                gradient.apply(Direction.UP));
     }
 
     private Vector getPressureGradient(Cell cell) {
