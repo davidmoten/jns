@@ -10,4 +10,7 @@ public interface Vector {
     Vector times(double value);
 
     Vector divideBy(double value);
+
+    double sum();
+
 }

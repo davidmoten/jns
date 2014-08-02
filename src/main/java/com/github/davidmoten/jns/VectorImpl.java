@@ -42,4 +42,9 @@ public class VectorImpl implements Vector {
         return null;
     }
 
+    @Override
+    public double sum() {
+        return east + north + up;
+    }
+
 }

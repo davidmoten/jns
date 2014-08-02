@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 public class Solver {
 
     private final static Vector GRAVITY = new VectorImpl(0, 0, -9.8);
+
     private final static Set<Direction> DIRECTIONS = Collections
             .unmodifiableSet(new HashSet<Direction>(Arrays.asList(Direction.EAST, Direction.NORTH,
                     Direction.UP)));
@@ -55,9 +55,19 @@ public class Solver {
         return result;
     }
 
-    private Matrix getVelocityJacobian(Cell cell) {
+    private Vector getVelocityLaplacian(Cell cell) {
+        return Vectors.create(getVelocityLaplacian(cell, Direction.EAST),
+                getVelocityLaplacian(cell, Direction.NORTH),
+                getVelocityLaplacian(cell, Direction.UP));
+    }
+
+    private double getVelocityLaplacian(Cell cell, Direction direction) {
+        return getVelocityGradient2nd(cell, direction);
+    }
+
+    private double getVelocityGradient2nd(Cell cell, Direction direction) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -65,7 +75,7 @@ public class Solver {
         return null;
     }
 
-    private Vector getVelocityLaplacian(Cell cell) {
+    private Matrix getVelocityJacobian(Cell cell) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -75,8 +85,6 @@ public class Solver {
         return pressure -> getPressureCorrection(cell, cell.modifyPressure(pressure));
     }
 
-    private static BinaryOperator<Double> SUM = null;
-
     private double getPressureCorrection(Cell cell, Cell override) {
         double pressureLaplacian = getPressureLaplacian(cell, override);
         return pressureLaplacian
@@ -85,7 +93,9 @@ public class Solver {
                         // for each direction
                         .map(d -> override.velocity().value(d)
                                 * getGradient(cell, d, gradientDot(d), DerivativeType.FIRST,
-                                        Optional.of(override))).reduce(SUM).get();
+                                        Optional.of(override)))
+                        // sum
+                        .mapToDouble(x -> x).sum();
     }
 
     private double getGradient(Cell cell, Direction d, Function<Cell, Double> gradientDot,
