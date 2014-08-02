@@ -1,5 +1,4 @@
 package com.github.davidmoten.jns;
 
-public interface Velocity {
-	double velocity(Direction direction);
+public interface Velocity extends Vector {
 }
