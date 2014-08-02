@@ -6,7 +6,7 @@ public interface Cell {
 
     double pressure();
 
-    Velocity velocity();
+    Vector velocity();
 
     double temperature();
 
