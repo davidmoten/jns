@@ -90,9 +90,10 @@ public class Solver {
         return Matrixes.create(d -> getVelocityGradient(cell, d));
     }
 
-    private Vector getVelocityGradient(Cell cell, Direction d) {
-        // TODO Auto-generated method stub
-        return null;
+    private Vector getVelocityGradient(Cell cell, Direction direction) {
+        Function<Direction, Double> f = d -> getGradient(cell, direction, c -> c.velocity()
+                .value(d), DerivativeType.FIRST, Optional.empty());
+        return Vectors.create(f);
     }
 
     private Function<Double, Double> getPressureCorrectionFunction(Cell cell, Vector newVelocity,
