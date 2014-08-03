@@ -40,8 +40,8 @@ public class Solver {
         return newPressure;
     }
 
-    private Vector getVelocityAfterTime(Cell cell, double timeStepSeconds) {
-        return cell.velocity().add(dvdt(cell).times(timeStepSeconds));
+    private Vector getVelocityAfterTime(Cell cell, double timeSeconds) {
+        return cell.velocity().add(dvdt(cell).times(timeSeconds));
     }
 
     private Vector dvdt(Cell cell) {
@@ -71,24 +71,34 @@ public class Solver {
         };
         final Function<Direction, Double> gradient =
         // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND, Optional.empty());
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                Optional.empty());
 
         return Vectors.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
-        // TODO Auto-generated method stub
-        return null;
+        return Vectors.create(d -> getPressureGradient(cell, d));
+    }
+
+    private double getPressureGradient(Cell cell, Direction direction) {
+        return getGradient(cell, direction, c -> c.pressure(), DerivativeType.FIRST,
+                Optional.empty());
     }
 
     private Matrix getVelocityJacobian(Cell cell) {
+        return Matrixes.create(d -> getVelocityGradient(cell, d));
+    }
+
+    private Vector getVelocityGradient(Cell cell, Direction d) {
         // TODO Auto-generated method stub
         return null;
     }
 
     private Function<Double, Double> getPressureCorrectionFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getPressureCorrection(cell, cell.modifyPressure(pressure));
+        return pressure -> getPressureCorrection(cell, cell.modifyVelocity(newVelocity)
+                .modifyPressure(pressure));
     }
 
     private double getPressureCorrection(Cell cell, Cell override) {
