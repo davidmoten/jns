@@ -16,10 +16,10 @@ public class Solver {
                     Direction.UP)));
 
     public Cell step(Cell cell, double timeStepSeconds) {
-        Vector v1 = getVelocityAfterTime(cell, timeStepSeconds);
-        Function<Double, Double> f = getPressureCorrectionFunction(cell, v1, timeStepSeconds);
+        Vector v = getVelocityAfterTime(cell, timeStepSeconds);
+        Function<Double, Double> f = getPressureCorrectionFunction(cell, v, timeStepSeconds);
         double newPressure = solveForPressure(cell, f);
-        return cell.modifyPressure(newPressure).modifyVelocity(v1);
+        return cell.modifyPressure(newPressure).modifyVelocity(v);
     }
 
     private double solveForPressure(Cell cell, Function<Double, Double> pressureCorrectionFunction) {
@@ -91,9 +91,9 @@ public class Solver {
     }
 
     private Vector getVelocityGradient(Cell cell, Direction direction) {
-        Function<Direction, Double> f = d -> getGradient(cell, direction, c -> c.velocity()
+        Function<Direction, Double> gradient = d -> getGradient(cell, direction, c -> c.velocity()
                 .value(d), DerivativeType.FIRST, Optional.empty());
-        return Vectors.create(f);
+        return Vectors.create(gradient);
     }
 
     private Function<Double, Double> getPressureCorrectionFunction(Cell cell, Vector newVelocity,
@@ -115,15 +115,23 @@ public class Solver {
                         .mapToDouble(x -> x).sum();
     }
 
-    private double getGradient(Cell cell, Direction d, Function<Cell, Double> gradientDot,
-            DerivativeType derivativeType, Optional<Cell> override) {
+    private double getGradient(
+    // cell
+            Cell cell,
+            // direction
+            Direction d,
+            // gradientDot function
+            Function<Cell, Double> gradientDot,
+            // first or second derivative
+            DerivativeType derivativeType,
+            // override cell values if present
+            Optional<Cell> override) {
         // TODO Auto-generated method stub
         return 0;
     }
 
     private Function<Cell, Double> gradientDot(Direction d) {
-        // TODO Auto-generated method stub
-        return null;
+        return cell -> getVelocityGradient(cell, d).dotProduct(cell.velocity());
     }
 
     private double getPressureLaplacian(Cell cell, Cell override) {

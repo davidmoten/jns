@@ -13,4 +13,6 @@ public interface Vector {
 
     double sum();
 
+    double dotProduct(Vector vector);
+
 }
