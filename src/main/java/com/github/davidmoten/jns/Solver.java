@@ -115,6 +115,20 @@ public class Solver {
                         .mapToDouble(x -> x).sum();
     }
 
+    private Function<Cell, Double> gradientDot(Direction d) {
+        return cell -> getVelocityGradient(cell, d).dotProduct(cell.velocity());
+    }
+
+    private double getPressureLaplacian(Cell cell, Cell override) {
+        return getPressureGradient2nd(cell, override).sum();
+    }
+
+    private Vector getPressureGradient2nd(Cell cell, Cell override) {
+        Function<Direction, Double> f = d -> getGradient(cell, d, c -> c.pressure(),
+                DerivativeType.SECOND, Optional.of(override));
+        return Vectors.create(f);
+    }
+
     private double getGradient(
     // cell
             Cell cell,
@@ -126,15 +140,6 @@ public class Solver {
             DerivativeType derivativeType,
             // override cell values if present
             Optional<Cell> override) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    private Function<Cell, Double> gradientDot(Direction d) {
-        return cell -> getVelocityGradient(cell, d).dotProduct(cell.velocity());
-    }
-
-    private double getPressureLaplacian(Cell cell, Cell override) {
         // TODO Auto-generated method stub
         return 0;
     }

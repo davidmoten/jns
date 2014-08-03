@@ -47,4 +47,10 @@ public class VectorImpl implements Vector {
         return east + north + up;
     }
 
+    @Override
+    public double dotProduct(Vector vector) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }
