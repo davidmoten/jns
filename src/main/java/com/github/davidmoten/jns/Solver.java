@@ -17,17 +17,17 @@ public class Solver {
 
     public Cell step(Cell cell, double timeStepSeconds) {
         Vector v = getVelocityAfterTime(cell, timeStepSeconds);
-        Function<Double, Double> f = getPressureCorrectionFunction(cell, v, timeStepSeconds);
+        Function<Double, Double> f = getContinuityFunction(cell, v, timeStepSeconds);
         double newPressure = solveForPressure(cell, f);
         return cell.modifyPressure(newPressure).modifyVelocity(v);
     }
 
-    private double solveForPressure(Cell cell, Function<Double, Double> pressureCorrectionFunction) {
+    private double solveForPressure(Cell cell, Function<Double, Double> continuityFunction) {
         // TODO what values for h,precision?
         double h = 1;
         double precision = 0.000001;
         int maxIterations = 15;
-        Optional<Double> p = NewtonsMethod.solve(pressureCorrectionFunction, cell.pressure(), h,
+        Optional<Double> p = NewtonsMethod.solve(continuityFunction, cell.pressure(), h,
                 precision, maxIterations);
         double newPressure;
         if (p.isPresent())
@@ -48,10 +48,10 @@ public class Solver {
         Vector velocityLaplacian = getVelocityLaplacian(cell);
         Vector pressureGradient = getPressureGradient(cell);
         Matrix velocityJacobian = getVelocityJacobian(cell);
-        Vector divergenceOfStress = velocityLaplacian.times(cell.viscosity()).minus(
-                pressureGradient);
-        Vector result = divergenceOfStress.divideBy(cell.density()).add(GRAVITY)
-                .minus(velocityJacobian.times(cell.velocity()));
+        Vector divergenceOfStress = velocityLaplacian.times(cell.viscosity())
+                .minus(pressureGradient).add(GRAVITY);
+        Vector result = divergenceOfStress.divideBy(cell.density()).minus(
+                velocityJacobian.times(cell.velocity()));
         return result;
     }
 
@@ -96,13 +96,13 @@ public class Solver {
         return Vectors.create(gradient);
     }
 
-    private Function<Double, Double> getPressureCorrectionFunction(Cell cell, Vector newVelocity,
+    private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getPressureCorrection(cell, cell.modifyVelocity(newVelocity)
+        return pressure -> getContinuityFunction(cell, cell.modifyVelocity(newVelocity)
                 .modifyPressure(pressure));
     }
 
-    private double getPressureCorrection(Cell cell, Cell override) {
+    private double getContinuityFunction(Cell cell, Cell override) {
         double pressureLaplacian = getPressureLaplacian(cell, override);
         return pressureLaplacian
                 + DIRECTIONS
