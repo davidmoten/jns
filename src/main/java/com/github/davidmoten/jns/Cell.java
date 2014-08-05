@@ -2,22 +2,22 @@ package com.github.davidmoten.jns;
 
 public interface Cell {
 
-    Position position();
+	Vector position();
 
-    double pressure();
+	double pressure();
 
-    Vector velocity();
+	Vector velocity();
 
-    double temperature();
+	double temperature();
 
-    double density();
+	double density();
 
-    double viscosity();
+	double viscosity();
 
-    Cell neighbour(Direction direction, int count);
+	Cell neighbour(Direction direction, int count);
 
-    Cell modifyPressure(double pressure);
+	Cell modifyPressure(double pressure);
 
-    Cell modifyVelocity(Vector v1);
+	Cell modifyVelocity(Vector v1);
 
 }

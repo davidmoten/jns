@@ -1,18 +1,50 @@
 package com.github.davidmoten.jns;
 
-public interface Vector {
-    double value(Direction direction);
+public class Vector {
 
-    Vector add(Vector vector);
+	private final double east;
+	private final double north;
+	private final double up;
 
-    Vector minus(Vector vector);
+	Vector(double east, double north, double up) {
+		this.east = east;
+		this.north = north;
+		this.up = up;
+	}
 
-    Vector times(double value);
+	public double value(Direction direction) {
+		if (direction.equals(Direction.EAST))
+			return east;
+		else if (direction.equals(Direction.NORTH))
+			return north;
+		else if (direction.equals(Direction.UP))
+			return up;
+		else
+			throw new RuntimeException("direction " + direction
+					+ " not expected");
+	}
 
-    Vector divideBy(double value);
+	public Vector add(Vector v) {
+		return Vectors.create(east + v.east, north + v.north, up + v.up);
+	}
 
-    double sum();
+	public Vector minus(Vector v) {
+		return Vectors.create(east - v.east, north - v.north, up - v.up);
+	}
 
-    double dotProduct(Vector vector);
+	public Vector times(double value) {
+		return Vectors.create(east * value, north * value, up * value);
+	}
 
+	public Vector divideBy(double value) {
+		return Vectors.create(east / value, north / value, up / value);
+	}
+
+	public double sum() {
+		return east + north + up;
+	}
+
+	public double dotProduct(Vector v) {
+		return east * v.east + north * v.north + up * v.up;
+	}
 }
