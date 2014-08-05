@@ -20,6 +20,8 @@ In terms of reference material I've found very detailed mathematical discussions
 Useful html symbols:
 * &Delta; &delta; &sdot; &nabla;<sup>2</sup> &mu; &rho;
 
+    &rho;( &delta;v/&delta;t + (v &sdot; &nabla;)v = - &nabla;p + &mu;&nabla;<sup>2</sup>v + f
+
 Architecture
 --------------
 Aim is to provide an implementation that is as much as possible independent of the chosen mesh (regular or irregular) and thus to defer calculations of say first and second derivatives to be particular to the mesh type.
