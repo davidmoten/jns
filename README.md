@@ -16,7 +16,7 @@ In terms of reference material I've found very detailed mathematical discussions
 * [Computational Fluid Dynamics lectures Uni Michigan](http://www.fem.unicamp.br/~phoenics/SITE_PHOENICS/Apostilas/CFD-1_U%20Michigan_Hong/Lecture13.pdf) might have sufficent explanation of the SIMPLER algorithm to run with also.
 
 Useful html symbols:
-* &Delta; &delta; &sdot; &nabla; &mu;
+* &Delta; &delta; &sdot; &nabla;<sup>2</sup> &mu;
 
 Architecture
 --------------
