@@ -18,7 +18,7 @@ In terms of reference material I've found very detailed mathematical discussions
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
 
 Useful html symbols:
-* &Delta; &delta; &sdot; &nabla;<sup>2</sup> &mu; &ro;
+* &Delta; &delta; &sdot; &nabla;<sup>2</sup> &mu; &rho;
 
 Architecture
 --------------
