@@ -35,6 +35,8 @@ where
 
 &nbsp;&nbsp;&nbsp;&nbsp;**f** = other forces vector (for example gravity)
 
+&nbsp;&nbsp;&nbsp;&nbsp;&mu; = viscosity (1 / Reynolds number)
+
 
 Architecture
 --------------
