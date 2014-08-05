@@ -4,20 +4,12 @@ import static com.github.davidmoten.jns.CellType.FLUID;
 import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 public class Solver {
 
     private final static Vector GRAVITY = Vector.create(0, 0, -9.8);
-
-    private final static Set<Direction> DIRECTIONS = Collections
-            .unmodifiableSet(new HashSet<Direction>(Arrays.asList(Direction.EAST, Direction.NORTH,
-                    Direction.UP)));
 
     public Cell step(Cell cell, double timeStepSeconds) {
         final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
@@ -74,11 +66,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-                // gradient in given direction
-                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                        Optional.empty());
+        // gradient in given direction
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                Optional.empty());
 
-                return Vector.create(gradient);
+        return Vector.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -128,7 +120,7 @@ public class Solver {
     }
 
     private double getGradient(
-            // cell
+    // cell
             Cell cell,
             // direction
             Direction d,
