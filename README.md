@@ -21,11 +21,11 @@ Equations
 --------------
 The momentum equation is:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
+    &rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
 
 where 
 
-    &rho = fluid density
+    &rho; = fluid density
     **v** = velocity vector
     p = pressure
     t = time
