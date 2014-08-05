@@ -1,6 +1,7 @@
 package com.github.davidmoten.jns;
 
 import static com.github.davidmoten.jns.CellType.FLUID;
+import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
 
 import java.util.Arrays;
@@ -199,13 +200,22 @@ public class Solver {
             return t;
         else if (is(FLUID, FLUID, UNKNOWN, t))
             return t;
-        else if (t.c2().type() == CellType.OBSTACLE)
+        else if (t.c2().type() == OBSTACLE)
             return t;
         else if (is(UNKNOWN, FLUID, FLUID, t))
             return CellTriplet.create(t.c2(), t.c3(), t.c1());
+        else if (t.c2().type() == FLUID && t.c3().type() == OBSTACLE)
+            return transform(t.c1(), t.c2(), obstacleToValue(t.c3(), t.c2()));
+        else if (t.c2().type() == FLUID && t.c1().type() == OBSTACLE)
+            return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
         else
             return unexpected("not handled");
 
+    }
+
+    private static Cell obstacleToValue(Cell c3, Cell c2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     private static CellTriplet transform(Cell c1, Cell c2, Cell c3) {
