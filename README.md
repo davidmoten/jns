@@ -17,10 +17,11 @@ In terms of reference material I've found very detailed mathematical discussions
 * [Computational Methods for Fluid Dynamics](ftp://ftp.demec.ufpr.br/CFD/bibliografia/Ferziger%20Peric%20-%20Computational%20Methods%20for%20Fluid%20Dynamics,%203rd%20Ed%20-%202002.pdf) by Ferziger and Peric
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
 
-Useful html symbols:
-* &Delta; &delta; &sdot; &nabla;<sup>2</sup> &mu; &rho;
+Equations
+--------------
+The momentum equation is:
 
-    &rho;( &delta;v/&delta;t + (v &sdot; &nabla;)v ) = - &nabla;p + &mu;&nabla;<sup>2</sup>v + f
+&rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
 
 Architecture
 --------------
