@@ -73,11 +73,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-        // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                Optional.empty());
+                // gradient in given direction
+                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                        Optional.empty());
 
-        return Vectors.create(gradient);
+                return Vectors.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -127,7 +127,7 @@ public class Solver {
     }
 
     private double getGradient(
-    // cell
+            // cell
             Cell cell,
             // direction
             Direction d,
@@ -137,8 +137,8 @@ public class Solver {
             DerivativeType derivativeType,
             // override cell values if present
             Optional<Cell> override) {
-        // TODO Auto-generated method stub
-        return 0;
+        final Cell c = override.orElse(cell);
+        return getGradient(f, c.neighbour(d, -1), c, c.neighbour(d, 1), d, derivativeType);
     }
 
     private static <T> T unexpected(String msg) {
