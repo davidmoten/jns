@@ -22,4 +22,6 @@ public interface Cell {
 
     Cell modifyVelocity(Vector v1);
 
+    Cell modifyPosition(Vector position);
+
 }
