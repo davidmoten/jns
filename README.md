@@ -23,6 +23,13 @@ The momentum equation is:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
 
+where 
+    &rho = fluid density
+    **v** = velocity vector
+    p = pressure
+    t = time
+
+
 Architecture
 --------------
 Aim is to provide an implementation that is as much as possible independent of the chosen mesh (regular or irregular) and thus to defer calculations of say first and second derivatives to be particular to the mesh type.
