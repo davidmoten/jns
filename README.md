@@ -26,9 +26,14 @@ The momentum equation is:
 where 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho; = fluid density
+
 &nbsp;&nbsp;&nbsp;&nbsp;**v** = velocity vector
+
 &nbsp;&nbsp;&nbsp;&nbsp;p = pressure
+
 &nbsp;&nbsp;&nbsp;&nbsp;t = time
+
+&nbsp;&nbsp;&nbsp;&nbsp;**f** = other forces vector (for example gravity)
 
 
 Architecture
