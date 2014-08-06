@@ -1,6 +1,7 @@
 package com.github.davidmoten.jns;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Optional;
 
@@ -14,5 +15,28 @@ public class NewtonsMethodTest {
 		Optional<Double> r = NewtonsMethod.solve(x -> x * x - 2, 1, 0.1,
 				precision, 100);
 		assertEquals(Math.sqrt(2.0), r.get(), precision);
+	}
+
+	@Test
+	public void testCannotMeetPrecision() {
+		double precision = 0.00001;
+		Optional<Double> r = NewtonsMethod.solve(x -> x * x - 2, 1, 0.1,
+				precision, 1);
+		assertFalse(r.isPresent());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testStepIsZeroThrowsException() {
+		NewtonsMethod.solve(x -> x * x - 2, 1, 0, 0.01, 100);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testPrecisionIsZeroThrowsException() {
+		NewtonsMethod.solve(x -> x * x - 2, 1, 0.1, 0, 100);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testMaxIterationsIsZeroThrowsException() {
+		NewtonsMethod.solve(x -> x * x - 2, 1, 0.1, 0.0001, 0);
 	}
 }

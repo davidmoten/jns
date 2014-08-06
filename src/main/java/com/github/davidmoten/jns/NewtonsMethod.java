@@ -23,6 +23,7 @@ public class NewtonsMethod {
 			else
 				x = x - fx / gradient;
 			fx = f.apply(x);
+			i++;
 		}
 		if (Math.abs(fx) <= precision)
 			return Optional.of(x);
