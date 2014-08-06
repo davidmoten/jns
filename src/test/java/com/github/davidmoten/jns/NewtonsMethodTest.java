@@ -39,4 +39,9 @@ public class NewtonsMethodTest {
 	public void testMaxIterationsIsZeroThrowsException() {
 		NewtonsMethod.solve(x -> x * x - 2, 1, 0.1, 0.0001, 0);
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void testFunctionIsNullThrowsException() {
+		NewtonsMethod.solve(null, 1, 0.1, 0.0001, 100);
+	}
 }

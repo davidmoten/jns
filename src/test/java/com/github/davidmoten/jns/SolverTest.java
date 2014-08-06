@@ -27,7 +27,7 @@ public class SolverTest {
 	}
 
 	@Test
-	public void test() {
+	public void testSolverOn() {
 		Solver solver = new Solver();
 		Cell result = solver.step(createCell(), 1);
 		System.out.println(result);
