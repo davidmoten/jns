@@ -57,4 +57,62 @@ public class Vector {
     public static final Vector create(Function<Direction, Double> f) {
         return new Vector(f.apply(Direction.EAST), f.apply(Direction.NORTH), f.apply(Direction.UP));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Vector [east=");
+        builder.append(east);
+        builder.append(", north=");
+        builder.append(north);
+        builder.append(", up=");
+        builder.append(up);
+        builder.append("]");
+        return builder.toString();
+    }
+
+    public double up() {
+        return up;
+    }
+
+    public double east() {
+        return east;
+    }
+
+    public double north() {
+        return north;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(east);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(north);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(up);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Vector other = (Vector) obj;
+        if (Double.doubleToLongBits(east) != Double.doubleToLongBits(other.east))
+            return false;
+        if (Double.doubleToLongBits(north) != Double.doubleToLongBits(other.north))
+            return false;
+        if (Double.doubleToLongBits(up) != Double.doubleToLongBits(other.up))
+            return false;
+        return true;
+    }
+
 }
