@@ -123,6 +123,39 @@ public class CellImpl implements Cell {
 		return viscosity;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder2 = new StringBuilder();
+		builder2.append("CellImpl [type=");
+		builder2.append(type);
+		builder2.append(", position=");
+		builder2.append(position);
+		builder2.append(", pressure=");
+		builder2.append(pressure);
+		builder2.append(", velocity=");
+		builder2.append(velocity);
+		builder2.append(", temperature=");
+		builder2.append(temperature);
+		builder2.append(", density=");
+		builder2.append(density);
+		builder2.append(", viscosity=");
+		builder2.append(viscosity);
+		builder2.append(", \n  west=");
+		builder2.append(west);
+		builder2.append(", \n  east=");
+		builder2.append(east);
+		builder2.append(", \n  north=");
+		builder2.append(north);
+		builder2.append(", \n  south=");
+		builder2.append(south);
+		builder2.append(", \n  up=");
+		builder2.append(up);
+		builder2.append(", \n  down=");
+		builder2.append(down);
+		builder2.append("]");
+		return builder2.toString();
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -156,6 +189,11 @@ public class CellImpl implements Cell {
 			return this;
 		}
 
+		public Builder position(double east, double north, double up) {
+			this.position = Vector.create(east, north, up);
+			return this;
+		}
+
 		public Builder pressure(double pressure) {
 			this.pressure = pressure;
 			return this;
@@ -163,6 +201,11 @@ public class CellImpl implements Cell {
 
 		public Builder velocity(Vector velocity) {
 			this.velocity = velocity;
+			return this;
+		}
+
+		public Builder velocity(double east, double north, double up) {
+			this.velocity = Vector.create(east, north, up);
 			return this;
 		}
 
