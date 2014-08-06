@@ -14,7 +14,7 @@ In terms of reference material I've found very detailed mathematical discussions
 * [Fractional step methods for the Navier Stokes equations on non-staggered grids](http://journal.austms.org.au/ojs/index.php/ANZIAMJ/article/download/593/461) by Armfield and Street. I might run with this shortly.
 * [Numerical Fluid Mechanics MIT lectures](http://ocw.mit.edu/courses/mechanical-engineering/2-29-numerical-fluid-mechanics-fall-2011/lecture-notes/MIT2_29F11_lect_24.pdf)
 * [Computational Fluid Dynamics lectures Uni Michigan](http://www.fem.unicamp.br/~phoenics/SITE_PHOENICS/Apostilas/CFD-1_U%20Michigan_Hong/Lecture13.pdf) might have sufficent explanation of the SIMPLER algorithm to run with also.
-* Computational Methods for Fluid Dynamics  (ftp://ftp.demec.ufpr.br/CFD/bibliografia/Ferziger%20Peric%20-%20Computational%20Methods%20for%20Fluid%20Dynamics,%203rd%20Ed%20-%202002.pdf) by Ferziger and Peric
+* [Computational Methods for Fluid Dynamics](https://docs.google.com/file/d/0B7WvmGcRs5CzanBEeDlDaEk3dEU/edit) by Ferziger and Peric
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
 
 Navier-Stokes Equations
