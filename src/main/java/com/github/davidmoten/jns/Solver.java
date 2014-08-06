@@ -3,6 +3,7 @@ package com.github.davidmoten.jns;
 import static com.github.davidmoten.jns.CellType.FLUID;
 import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
+import static com.github.davidmoten.jns.Util.unexpected;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -138,14 +139,6 @@ public class Solver {
 		final Cell c = override.orElse(cell);
 		return getGradient(f, cell.neighbour(d, -1), c, cell.neighbour(d, 1),
 				d, derivativeType);
-	}
-
-	private static <T> T unexpected(String msg) {
-		throw new RuntimeException(msg);
-	}
-
-	private static <T> T unexpected() {
-		return unexpected("unexpected");
 	}
 
 	private double getGradient(Function<Cell, Double> f, Cell c1, Cell c2,
