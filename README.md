@@ -37,6 +37,9 @@ where
 
 &nbsp;&nbsp;&nbsp;&nbsp;&mu; = viscosity (1 / Reynolds number)
 
+The governing equation for pressure computation is:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
 Architecture
 --------------
