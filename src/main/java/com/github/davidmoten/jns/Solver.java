@@ -12,6 +12,7 @@ public class Solver {
 	private final static Vector GRAVITY = Vector.create(0, 0, -9.8);
 
 	public Cell step(Cell cell, double timeStepSeconds) {
+		// explicit time advance schema as per Ferziger and Peric 7.3.2
 		final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
 		final Function<Double, Double> f = getContinuityFunction(cell, v,
 				timeStepSeconds);
@@ -135,8 +136,8 @@ public class Solver {
 			// override cell values if present
 			Optional<Cell> override) {
 		final Cell c = override.orElse(cell);
-		return getGradient(f, c.neighbour(d, -1), c, c.neighbour(d, 1), d,
-				derivativeType);
+		return getGradient(f, cell.neighbour(d, -1), c, cell.neighbour(d, 1),
+				d, derivativeType);
 	}
 
 	private static <T> T unexpected(String msg) {
