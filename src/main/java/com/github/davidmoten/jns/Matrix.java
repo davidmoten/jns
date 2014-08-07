@@ -17,4 +17,18 @@ public class Matrix {
 				row3.dotProduct(v));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Matrix [");
+		builder.append("\n");
+		builder.append(row1);
+		builder.append("\n");
+		builder.append(row2);
+		builder.append("\n");
+		builder.append(row3);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }
