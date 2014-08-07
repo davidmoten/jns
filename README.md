@@ -44,6 +44,8 @@ to the force exerted by gravity on a cubic metre of fluid. This is thus
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1025kg/m<sup>3</sup> * 1m<sup>3</sup> * -9.81m/s<sup>2</sup> using an approximation for the density of salt water<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 10055.25kgm/s<sup>2</sup>
 
+So in this case **f** = (0,0,10055.25) assuming gravity is the only extraneous force.
+
 The governing equation for pressure computation (derived via *conservation of mass*) is:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
