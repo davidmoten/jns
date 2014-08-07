@@ -77,19 +77,32 @@ public class RegularGridCell implements Cell {
 
     @Override
     public Cell modifyPressure(double pressure) {
-        // TODO Auto-generated method stub
-        return null;
+        return new CellDelegator(this) {
+            @Override
+            public double pressure() {
+                return pressure;
+            }
+        };
     }
 
     @Override
     public Cell modifyVelocity(Vector velocity) {
-        // TODO Auto-generated method stub
-        return null;
+        return new CellDelegator(this) {
+            @Override
+            public Vector velocity() {
+                return velocity;
+            }
+        };
     }
 
     @Override
-    public Cell modifyPosition(Vector position) {
-        // TODO Auto-generated method stub
-        return null;
+    public Cell modifyPosition(final Vector position) {
+        return new CellDelegator(this) {
+            @Override
+            public Vector position() {
+                return position;
+            }
+        };
+
     }
 }

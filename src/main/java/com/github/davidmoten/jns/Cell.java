@@ -18,7 +18,7 @@ public interface Cell {
 
     Cell modifyPressure(double pressure);
 
-    Cell modifyVelocity(Vector v1);
+    Cell modifyVelocity(Vector velocity);
 
     Cell modifyPosition(Vector position);
 
