@@ -10,8 +10,6 @@ public interface Cell {
 
     Vector velocity();
 
-    double temperature();
-
     double density();
 
     double viscosity();

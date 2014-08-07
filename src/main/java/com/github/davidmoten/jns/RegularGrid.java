@@ -7,18 +7,18 @@ public class RegularGrid {
     private final Vector[][][] velocity;
     private final double[][][] pressure;
     private final AtomicReference<Cell>[][][] cells;
-    private final double density;// 1025;
-    private final double viscosity = 30;
-    private final double temperature = 293; // kelvin
+
     private final int cellsEast;
     private final int cellsNorth;
     private final int cellsUp;
     private final double cellSizeEast;
     private final double cellSizeNorth;
     private final double cellSizeUp;
+    private final double density;// 1025;
+    private final double viscosity = 30;
 
-    public RegularGrid(int cellsEast, int cellsNorth, int cellsUp, double cellSizeEast,
-            double cellSizeNorth, double cellSizeUp, double density) {
+    private RegularGrid(int cellsEast, int cellsNorth, int cellsUp, double cellSizeEast,
+            double cellSizeNorth, double cellSizeUp, double density, double viscosity) {
         this.cellsEast = cellsEast;
         this.cellsNorth = cellsNorth;
         this.cellsUp = cellsUp;
@@ -60,10 +60,6 @@ public class RegularGrid {
         return pressure[indexEast][indexNorth][indexUp];
     }
 
-    public double temperature() {
-        return temperature;
-    }
-
     public double density() {
         return density;
     }
@@ -95,5 +91,76 @@ public class RegularGrid {
         } else
             // TODO return edges and beyond from cache as well?
             return new RegularGridCell(this, indexEast, indexNorth, indexUp);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private int cellsEast;
+        private int cellsNorth;
+        private int cellsUp;
+        private double cellSizeEast;
+        private double cellSizeNorth;
+        private double cellSizeUp;
+        private double density = 1025;
+        private double viscosity = 30;
+
+        private Builder() {
+        }
+
+        public Builder cellsEast(int cellsEast) {
+            this.cellsEast = cellsEast;
+            return this;
+        }
+
+        public Builder cellsNorth(int cellsNorth) {
+            this.cellsNorth = cellsNorth;
+            return this;
+        }
+
+        public Builder cellsUp(int cellsUp) {
+            this.cellsUp = cellsUp;
+            return this;
+        }
+
+        public Builder cellSize(double cellSize) {
+            this.cellSizeEast = cellSize;
+            this.cellSizeNorth = cellSize;
+            this.cellSizeUp = cellSize;
+            return this;
+        }
+
+        public Builder cellSizeEast(double cellSizeEast) {
+            this.cellSizeEast = cellSizeEast;
+            return this;
+        }
+
+        public Builder cellSizeNorth(double cellSizeNorth) {
+            this.cellSizeNorth = cellSizeNorth;
+            return this;
+        }
+
+        public Builder cellSizeUp(double cellSizeUp) {
+            this.cellSizeUp = cellSizeUp;
+            return this;
+        }
+
+        public Builder density(double density) {
+            this.density = density;
+            return this;
+        }
+
+        public Builder viscosity(double viscosity) {
+            this.viscosity = viscosity;
+            return this;
+        }
+
+        public RegularGrid build() {
+            return new RegularGrid(cellsEast, cellsNorth, cellsUp, cellSizeEast, cellSizeNorth,
+                    cellSizeUp, density, viscosity);
+        }
     }
 }
