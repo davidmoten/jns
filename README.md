@@ -41,8 +41,8 @@ Note that for the term **f** above in the case of gravity this is a vector with 
 to the force exerted by gravity on a cubic metre of fluid. This is thus 
 
 &nbsp;&nbsp;&nbsp;&nbsp;f<sub>z</sub> = ma = density * volume * accelerationGravity <br/>
-= 1025kg/m<sup>3</sup> * 1m<sup>3</sup> * -9.81m/s<sup>2</sup> using an approximation for the density of salt water<br/>
-= 10055.25kgm/s<sup>2</sup>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1025kg/m<sup>3</sup> * 1m<sup>3</sup> * -9.81m/s<sup>2</sup> using an approximation for the density of salt water<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 10055.25kgm/s<sup>2</sup>
 
 The governing equation for pressure computation (derived via *conservation of mass*) is:
 
