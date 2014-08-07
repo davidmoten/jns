@@ -9,28 +9,28 @@ public class RegularGridCell implements Cell {
 
 	private CellType type;
 	private final Vector position;
-	private final RegularGrid box;
+	private final RegularGrid regularGrid;
 	private final int indexEast;
 	private final int indexNorth;
 	private final int indexUp;
 
-	RegularGridCell(RegularGrid box, int indexEast, int indexNorth, int indexUp) {
-		this.box = box;
+	RegularGridCell(RegularGrid regularGrid, int indexEast, int indexNorth, int indexUp) {
+		this.regularGrid = regularGrid;
 		this.indexEast = indexEast;
 		this.indexNorth = indexNorth;
 		this.indexUp = indexUp;
 		if (indexUp < 0)
 			type = CellType.OBSTACLE;
-		else if (indexUp > box.maxIndexUp())
+		else if (indexUp > regularGrid.maxIndexUp())
 			type = CellType.AIR;
-		else if (indexEast < 0 || indexEast > box.maxIndexEast())
+		else if (indexEast < 0 || indexEast > regularGrid.maxIndexEast())
 			type = CellType.UNKNOWN;
-		else if (indexNorth < 0 || indexNorth > box.maxIndexNorth())
+		else if (indexNorth < 0 || indexNorth > regularGrid.maxIndexNorth())
 			type = CellType.UNKNOWN;
 		else
 			type = CellType.FLUID;
-		position = Vector.create(indexEast * box.cellSizeEast(), indexNorth
-				* box.cellSizeNorth(), indexUp * box.cellSizeUp());
+		position = Vector.create(indexEast * regularGrid.cellSizeEast(), indexNorth
+				* regularGrid.cellSizeNorth(), indexUp * regularGrid.cellSizeUp());
 	}
 
 	@Override
@@ -45,37 +45,37 @@ public class RegularGridCell implements Cell {
 
 	@Override
 	public double pressure() {
-		return box.pressure(indexEast, indexNorth, indexUp);
+		return regularGrid.pressure(indexEast, indexNorth, indexUp);
 	}
 
 	@Override
 	public Vector velocity() {
-		return box.velocity(indexEast, indexNorth, indexUp);
+		return regularGrid.velocity(indexEast, indexNorth, indexUp);
 	}
 
 	@Override
 	public double temperature() {
-		return box.temperature();
+		return regularGrid.temperature();
 	}
 
 	@Override
 	public double density() {
-		return box.density();
+		return regularGrid.density();
 	}
 
 	@Override
 	public double viscosity() {
-		return box.viscosity();
+		return regularGrid.viscosity();
 	}
 
 	@Override
 	public Cell neighbour(Direction direction, int count) {
 		if (direction == Direction.EAST)
-			return box.cell(indexEast + count, indexNorth, indexUp);
+			return regularGrid.cell(indexEast + count, indexNorth, indexUp);
 		else if (direction == Direction.NORTH)
-			return box.cell(indexEast, indexNorth + count, indexUp);
+			return regularGrid.cell(indexEast, indexNorth + count, indexUp);
 		else if (direction == Direction.UP)
-			return box.cell(indexEast, indexNorth, indexUp + count);
+			return regularGrid.cell(indexEast, indexNorth, indexUp + count);
 		else
 			return Util.unexpected();
 	}
