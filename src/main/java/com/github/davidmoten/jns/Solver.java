@@ -17,13 +17,13 @@ public class Solver {
 
 	private final static Vector GRAVITY = Vector.create(0, 0, -9.80665);
 
-	public Cell step(Cell cell, double timeStepSeconds) {
-		// explicit time advance schema as per Ferziger and Peric 7.3.2
+	public VelocityPressure step(Cell cell, double timeStepSeconds) {
+		// explicit time advance scheme as per Ferziger and Peric 7.3.2
 		final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
 		final Function<Double, Double> f = getContinuityFunction(cell, v,
 				timeStepSeconds);
-		final double newPressure = solveForPressure(cell, f);
-		return cell.modifyPressure(newPressure).modifyVelocity(v);
+		final double p = solveForPressure(cell, f);
+		return new VelocityPressure(v, p);
 	}
 
 	private double solveForPressure(Cell cell,

@@ -41,6 +41,8 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
+Note that the term **f** above in the case of gravity this is a vector with z coordinate equal to the force exerted by gravity on a cubic metre of fluid. This is thus ```
+
 Architecture
 --------------
 Aim is to provide an implementation that is as much as possible independent of the chosen mesh (regular or irregular) and thus to defer calculations of say first and second derivatives to be particular to the mesh type.
