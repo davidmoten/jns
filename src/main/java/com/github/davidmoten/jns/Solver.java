@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class Solver {
 
-	private final static Vector GRAVITY = Vector.create(0, 0, -9.8);
+	private final static Vector GRAVITY = Vector.create(0, 0, -9.80665);
 
 	public Cell step(Cell cell, double timeStepSeconds) {
 		// explicit time advance schema as per Ferziger and Peric 7.3.2
