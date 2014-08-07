@@ -8,7 +8,12 @@ import static com.github.davidmoten.jns.Util.unexpected;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Solver {
+
+	private static Logger log = LoggerFactory.getLogger(Solver.class);
 
 	private final static Vector GRAVITY = Vector.create(0, 0, -9.80665);
 

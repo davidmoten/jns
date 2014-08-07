@@ -53,7 +53,7 @@ public class CellImpl implements Cell {
 			return Util.unexpected("neighbour not supported: " + d + count);
 	}
 
-	public void setCell(Direction d, int count, Cell cell) {
+	private void setNeighbour(Direction d, int count, Cell cell) {
 		if (d == Direction.EAST && count == -1)
 			west = cell;
 		else if (d == Direction.EAST && count == 1)
@@ -68,6 +68,30 @@ public class CellImpl implements Cell {
 			up = cell;
 		else
 			Util.unexpected("neighbour not supported: " + d + count);
+	}
+
+	public void north(Cell c) {
+		setNeighbour(Direction.NORTH, 1, c);
+	}
+
+	public void south(Cell c) {
+		setNeighbour(Direction.NORTH, -1, c);
+	}
+
+	public void east(Cell c) {
+		setNeighbour(Direction.EAST, 1, c);
+	}
+
+	public void west(Cell c) {
+		setNeighbour(Direction.EAST, -1, c);
+	}
+
+	public void up(Cell c) {
+		setNeighbour(Direction.UP, 1, c);
+	}
+
+	public void down(Cell c) {
+		setNeighbour(Direction.UP, -1, c);
 	}
 
 	@Override
