@@ -37,14 +37,15 @@ where
 
 &nbsp;&nbsp;&nbsp;&nbsp;&mu; = viscosity (1 / Reynolds number)
 
-The governing equation for pressure computation (derived via *conservation of mass*) is:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
-
 Note that for the term **f** above in the case of gravity this is a vector with z coordinate equal 
 to the force exerted by gravity on a cubic metre of fluid. This is thus 
 
 &nbsp;&nbsp;&nbsp;&nbsp;f = ma = density * volume * accelerationGravity = 1025kg/m<sup>3</sup> * 1m<sup>3</sup> * 9.81m/s<sup>2</sup> using an approximation for the density of salt water. 
+
+The governing equation for pressure computation (derived via *conservation of mass*) is:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
+
 
 Architecture
 --------------
