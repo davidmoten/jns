@@ -7,7 +7,7 @@ public class RegularGrid {
     private final Vector[][][] velocity;
     private final double[][][] pressure;
     private final AtomicReference<Cell>[][][] cells;
-    private final double density = 1025;
+    private final double density;// 1025;
     private final double viscosity = 30;
     private final double temperature = 293; // kelvin
     private final int cellsEast;
@@ -18,20 +18,25 @@ public class RegularGrid {
     private final double cellSizeUp;
 
     public RegularGrid(int cellsEast, int cellsNorth, int cellsUp, double cellSizeEast,
-            double cellSizeNorth, double cellSizeUp) {
+            double cellSizeNorth, double cellSizeUp, double density) {
         this.cellsEast = cellsEast;
         this.cellsNorth = cellsNorth;
         this.cellsUp = cellsUp;
         this.cellSizeEast = cellSizeEast;
         this.cellSizeNorth = cellSizeNorth;
         this.cellSizeUp = cellSizeUp;
+        this.density = density;
         velocity = new Vector[cellsEast][cellsNorth][cellsUp];
         pressure = new double[cellsEast][cellsNorth][cellsUp];
         cells = new AtomicReference[cellsEast][cellsNorth][cellsUp];
+        // initialize the grid in equilibrium
         for (int i = 0; i < cells.length; i++)
             for (int j = 0; j < cells[i].length; j++)
-                for (int k = 0; k < cells[i][j].length; k++)
+                for (int k = 0; k < cells[i][j].length; k++) {
                     cells[i][j][k] = new AtomicReference<Cell>();
+                    velocity[i][j][k] = Vector.ZERO;
+                    pressure[i][j][k] = Util.pressureAtDepth(cellSizeUp * (cellsUp - k - 1));
+                }
 
     }
 
