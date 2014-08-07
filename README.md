@@ -41,7 +41,10 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
-Note that the term **f** above in the case of gravity this is a vector with z coordinate equal to the force exerted by gravity on a cubic metre of fluid. This is thus ```
+Note that for the term **f** above in the case of gravity this is a vector with z coordinate equal 
+to the force exerted by gravity on a cubic metre of fluid. This is thus 
+
+&nbsp;&nbsp;&nbsp;&nbsp;ACCELERATION * MASS = ACCELERATION * DENSITY * VOLUME = 9.81m/s<sup>2</sup> * 1025kg/m<sup>3</sup> * 1m<sup>3</sup> using an approximation for the density of salt water. 
 
 Architecture
 --------------
