@@ -5,7 +5,7 @@ jns
 
 Interested in this generally having seen water movement models in use at Australian Maritime Safety Authority to predict the location of people that have fallen in the ocean for example.
 
-Would like to document in java 8 (enjoying the conciseness of lambdas) a basic implementation of a [Navier-Stokes equations](http://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations) solver for an incompressible fluid in 3D using the [pressure-correction method](http://en.wikipedia.org/wiki/Pressure-correction_method).
+Would like to document in java 8 (enjoying the conciseness of lambdas) a basic implementation of a [Navier-Stokes equations](http://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations) solver for an incompressible fluid in 3D using the [pressure-correction method](http://en.wikipedia.org/wiki/Pressure-correction_method). See Architecture below for more specific aims.
 
 In terms of reference material I've found very detailed mathematical discussions of the pressure-correction method or high level descriptions and nothing in between. Ideally I'd like some pseudo code describing the algorithm with enough detail to code from. Still looking and in the meantime am fleshing out my best guesses.
 
@@ -50,14 +50,21 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
+Lazy computation
+-------------------
+
+What would be nice is the ability to only calculate what we need for the output. For instance in a 10x10x10 grid
+if I want to know the value of velocity at (5,5,5) after 2 time steps then clearly the whole grid does not have
+to be computed for the two time steps. 
 
 Architecture
 --------------
 Aim is to provide an implementation that is 
 
-* decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease
-* accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion
-* consider using lazy computation 
+* decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease.
+* ideally the algorithm should be clearly visible in the code. Abstractions around arrays etc will be provided to reduce noise.
+* accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
+* consider using lazy computation
 
 Unit tests will be created for regular grid meshes.
 
