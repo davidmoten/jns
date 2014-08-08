@@ -48,21 +48,38 @@ public class SolverTest {
 
 	@Test
 	public void testStepWithRegularGridStillWaterCellFromBottomOfGrid() {
-		final Solver solver = new Solver();
-		final RegularGrid grid = createGrid();
-		final Cell cell = grid.cell(5, 5, 0);
-		double pressure = cell.pressure();
-		assertNotNull(cell);
-		VelocityPressure result = solver.step(cell, 1);
-		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
-		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+		checkNoChange(5, 5, 0);
 	}
 
 	@Test
 	public void testStepWithRegularGridStillWaterCellFromSurfaceOfGrid() {
+		checkNoChange(5, 5, 9);
+	}
+
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromEastSideOfGrid() {
+		checkNoChange(0, 5, 5);
+	}
+
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromNorthSideOfGrid() {
+		checkNoChange(5, 0, 5);
+	}
+
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromBottomCornerofGrid() {
+		checkNoChange(0, 0, 0);
+	}
+
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromSurfaceSouthEastCornerofGrid() {
+		checkNoChange(9, 9, 9);
+	}
+
+	private void checkNoChange(int eastIndex, int northIndex, int upIndex) {
 		final Solver solver = new Solver();
 		final RegularGrid grid = createGrid();
-		final Cell cell = grid.cell(5, 5, 9);
+		final Cell cell = grid.cell(eastIndex, northIndex, upIndex);
 		double pressure = cell.pressure();
 		assertNotNull(cell);
 		VelocityPressure result = solver.step(cell, 1);
