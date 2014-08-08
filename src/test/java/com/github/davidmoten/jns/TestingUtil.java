@@ -14,8 +14,8 @@ class TestingUtil {
 
     static Mesh createMeshForWhirlpool2D() {
         final int cellsUp = 1;
-        final int cellsEast = 10;
-        final int cellsNorth = 10;
+        final int cellsEast = 100
+                final int cellsNorth = 10;
         final Function<Indices, CellType> typeFunction = i -> {
             // Floored bottom, unknown other boundaries
             if (i.up() < 0)
@@ -23,7 +23,10 @@ class TestingUtil {
             else if (i.up() > cellsUp - 1)
                 return CellType.UNKNOWN;// air
             else if (i.east() < 0 || i.east() > cellsEast - 1)
-                return CellType.OBSTACLE;
+                if (i.north() == cellsNorth - 1)
+                    return CellType.UNKNOWN;
+                else
+                    return CellType.OBSTACLE;
             else if (i.north() < 0)
                 return CellType.OBSTACLE;
             else if (i.north() > cellsNorth - 1)
@@ -43,7 +46,7 @@ class TestingUtil {
                 .cellSize(1)
                 .creator(
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
-                                .cellsUp(cellsUp).typeFunction(typeFunction)
-                                .velocityFunction(velocityFunction).build()).build();
+                        .cellsUp(cellsUp).typeFunction(typeFunction)
+                        .velocityFunction(velocityFunction).build()).build();
     }
 }
