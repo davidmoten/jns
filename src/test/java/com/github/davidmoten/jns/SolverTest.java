@@ -1,7 +1,7 @@
 package com.github.davidmoten.jns;
 
-import static com.github.davidmoten.jns.TestingUtil.createGrid;
 import static com.github.davidmoten.jns.TestingUtil.createGrid2D;
+import static com.github.davidmoten.jns.TestingUtil.createMesh;
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,7 +29,7 @@ public class SolverTest {
     @Test
     public void testGetVelocityAfterTimeWithRegularGridStillWater() {
         final Solver solver = new Solver();
-        final Mesh grid = createGrid();
+        final Mesh grid = createMesh();
         final Cell cell = grid.cell(5, 5, 5);
         assertNotNull(cell);
         final Vector result = solver.getVelocityAfterTime(cell, 1);
@@ -78,19 +78,31 @@ public class SolverTest {
 
     @Test
     public void testMeshStep() {
-
+        checkNoChangeAfterStep(5, 5, 5);
     }
 
     private Mesh checkNoChange(int eastIndex, int northIndex, int upIndex) {
         final Solver solver = new Solver();
-        final Mesh grid = createGrid();
-        final Cell cell = grid.cell(eastIndex, northIndex, upIndex);
+        final Mesh mesh = createMesh();
+        final Cell cell = mesh.cell(eastIndex, northIndex, upIndex);
         final double pressure = cell.pressure();
         assertNotNull(cell);
         final VelocityPressure result = solver.step(cell, 1);
         checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
         assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
-        return grid;
+        return mesh;
+    }
+
+    private Mesh checkNoChangeAfterStep(int eastIndex, int northIndex, int upIndex) {
+        final Solver solver = new Solver();
+        final Mesh mesh = createMesh().step(1);
+        final Cell cell = mesh.cell(eastIndex, northIndex, upIndex);
+        final double pressure = cell.pressure();
+        assertNotNull(cell);
+        final VelocityPressure result = solver.step(cell, 1);
+        checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
+        assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+        return mesh;
     }
 
     private void checkNoChange2D(int eastIndex, int northIndex, int upIndex) {

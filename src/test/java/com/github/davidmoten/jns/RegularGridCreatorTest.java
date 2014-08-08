@@ -1,6 +1,6 @@
 package com.github.davidmoten.jns;
 
-import static com.github.davidmoten.jns.TestingUtil.createGrid;
+import static com.github.davidmoten.jns.TestingUtil.createMesh;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -11,7 +11,7 @@ public class RegularGridCreatorTest {
 
 	@Test
 	public void testBottomOfRegularGridCellType() {
-		Mesh grid = createGrid();
+		Mesh grid = createMesh();
 		Cell cell = grid.cell(5, 5, 0);
 		assertEquals(CellType.FLUID, cell.type());
 		assertEquals(CellType.FLUID, cell.neighbour(Direction.UP, 1).type());
