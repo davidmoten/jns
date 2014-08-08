@@ -1,5 +1,7 @@
 package com.github.davidmoten.jns;
 
+import static com.github.davidmoten.jns.TestingUtil.createGrid;
+import static com.github.davidmoten.jns.TestingUtil.createGrid2D;
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -96,16 +98,6 @@ public class SolverTest {
 		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
 	}
 
-	private RegularGrid createGrid() {
-		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
-				.cellsUp(10).density(1025).viscosity(30).build();
-	}
-
-	private RegularGrid createGrid2D() {
-		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
-				.cellsUp(1).density(1025).viscosity(30).build();
-	}
-
 	private static void checkEquals(Vector a, Vector b, double precision) {
 		assertEquals(a.east(), b.east(), precision);
 	}
@@ -128,7 +120,7 @@ public class SolverTest {
 
 	private static Builder builder() {
 		return CellImpl.builder().pressure(pressureAtDepth(1))
-				.density(Util.DENSITY_KG_PER_M3).viscosity(30)
+				.density(Util.SEAWATER_MEAN_DENSITY_KG_PER_M3).viscosity(30)
 				.type(CellType.FLUID).velocity(0, 0, 0);
 	}
 

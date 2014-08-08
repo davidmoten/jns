@@ -1,25 +1,13 @@
 package com.github.davidmoten.jns;
 
-public interface Cell {
+public interface Cell extends CellData {
 
-    CellType type();
+	Cell neighbour(Direction direction, int count);
 
-    Vector position();
+	Cell modifyPressure(double pressure);
 
-    double pressure();
+	Cell modifyVelocity(Vector velocity);
 
-    Vector velocity();
-
-    double density();
-
-    double viscosity();
-
-    Cell neighbour(Direction direction, int count);
-
-    Cell modifyPressure(double pressure);
-
-    Cell modifyVelocity(Vector velocity);
-
-    Cell modifyPosition(Vector position);
+	Cell modifyPosition(Vector position);
 
 }

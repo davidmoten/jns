@@ -7,32 +7,29 @@ package com.github.davidmoten.jns;
  */
 public class RegularGridCell implements Cell {
 
-	private CellType type;
+	private final CellType type;
 	private final Vector position;
 	private final RegularGrid regularGrid;
 	private final int indexEast;
 	private final int indexNorth;
 	private final int indexUp;
+	private final Vector velocity;
+	private final double pressure;
+	private final double density;
+	private final double viscosity;
 
 	RegularGridCell(RegularGrid regularGrid, int indexEast, int indexNorth,
-			int indexUp) {
+			int indexUp, CellData cellData) {
 		this.regularGrid = regularGrid;
 		this.indexEast = indexEast;
 		this.indexNorth = indexNorth;
 		this.indexUp = indexUp;
-		if (indexUp < 0)
-			type = CellType.OBSTACLE;
-		else if (indexUp > regularGrid.maxIndexUp())
-			type = CellType.UNKNOWN;// air
-		else if (indexEast < 0 || indexEast > regularGrid.maxIndexEast())
-			type = CellType.UNKNOWN;
-		else if (indexNorth < 0 || indexNorth > regularGrid.maxIndexNorth())
-			type = CellType.UNKNOWN;
-		else
-			type = CellType.FLUID;
-		position = Vector.create(indexEast * regularGrid.cellSizeEast(),
-				indexNorth * regularGrid.cellSizeNorth(),
-				indexUp * regularGrid.cellSizeUp());
+		this.type = cellData.type();
+		this.pressure = cellData.pressure();
+		this.position = cellData.position();
+		this.velocity = cellData.velocity();
+		this.density = cellData.density();
+		this.viscosity = cellData.viscosity();
 	}
 
 	@Override
@@ -47,22 +44,22 @@ public class RegularGridCell implements Cell {
 
 	@Override
 	public double pressure() {
-		return regularGrid.pressure(indexEast, indexNorth, indexUp);
+		return pressure;
 	}
 
 	@Override
 	public Vector velocity() {
-		return regularGrid.velocity(indexEast, indexNorth, indexUp);
+		return velocity;
 	}
 
 	@Override
 	public double density() {
-		return regularGrid.density();
+		return density;
 	}
 
 	@Override
 	public double viscosity() {
-		return regularGrid.viscosity();
+		return viscosity;
 	}
 
 	@Override

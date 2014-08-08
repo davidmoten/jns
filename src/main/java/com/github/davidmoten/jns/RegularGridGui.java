@@ -14,11 +14,19 @@ public class RegularGridGui extends Application {
 	private static final double MIN_SATURATION = 0.05;
 
 	private RegularGrid grid;
+	private final int cellsEast = 10;
+	private final int cellsNorth = 10;
+	private final int cellsUp = 1;
 
 	@Override
 	public void init() throws Exception {
-		grid = RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
-				.cellsUp(1).build();
+		grid = RegularGrid
+				.builder()
+				.cellSize(1)
+				.creator(
+						new RegularGridCreator(cellsEast, cellsNorth, cellsUp,
+								Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
+								Util.SEAWATER_MEAN_VISCOSITY)).build();
 	}
 
 	@Override
@@ -42,19 +50,18 @@ public class RegularGridGui extends Application {
 		Statistics vStats = new Statistics();
 
 		// get stats
-		for (int east = 0; east <= grid.maxIndexEast(); east++)
-			for (int north = 0; north <= grid.maxIndexNorth(); north++) {
-				Cell cell = grid.cell(east, north, grid.maxIndexUp());
+		for (int east = 0; east <= cellsEast; east++)
+			for (int north = 0; north <= cellsNorth; north++) {
+				Cell cell = grid.cell(east, north, cellsUp);
 				double p = cell.pressure();
 				double v = cell.velocity().magnitude();
 				pStats.add(p);
 				vStats.add(v);
 			}
 
-		for (int east = 0; east <= grid.maxIndexEast(); east++)
-			for (int north = 0; north <= grid.maxIndexNorth(); north++) {
-				drawCell(gc, grid, east, north, grid.maxIndexUp(), pStats,
-						vStats);
+		for (int east = 0; east <= cellsEast; east++)
+			for (int north = 0; north <= cellsNorth; north++) {
+				drawCell(gc, grid, east, north, cellsUp, pStats, vStats);
 			}
 	}
 
@@ -63,9 +70,9 @@ public class RegularGridGui extends Application {
 		double w = gc.getCanvas().getWidth();
 		double h = gc.getCanvas().getHeight();
 		Cell cell = grid.cell(east, north, up);
-		double cellWidth = w / (grid.maxIndexEast() + 1);
+		double cellWidth = w / cellsEast;
 		double x1 = cellWidth * east;
-		double cellHeight = h / (grid.maxIndexNorth() + 1);
+		double cellHeight = h / cellsNorth;
 		double y1 = h - cellHeight * (north + 1);
 		double pressure0To1 = (cell.pressure() - pStats.min())
 				/ (pStats.max() - pStats.min());
