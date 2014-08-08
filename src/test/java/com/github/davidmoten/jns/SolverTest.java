@@ -36,14 +36,7 @@ public class SolverTest {
 
 	@Test
 	public void testStepWithRegularGridStillWaterCellFromCentreOfGrid() {
-		final Solver solver = new Solver();
-		final RegularGrid grid = createGrid();
-		final Cell cell = grid.cell(5, 5, 5);
-		double pressure = cell.pressure();
-		assertNotNull(cell);
-		VelocityPressure result = solver.step(cell, 1);
-		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
-		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+		checkNoChange(5, 5, 5);
 	}
 
 	@Test
@@ -76,6 +69,11 @@ public class SolverTest {
 		checkNoChange(9, 9, 9);
 	}
 
+	@Test
+	public void testStepWithRegularGrid2DStillWaterCellFromCentreOfGrid() {
+		checkNoChange2D(5, 5, 0);
+	}
+
 	private void checkNoChange(int eastIndex, int northIndex, int upIndex) {
 		final Solver solver = new Solver();
 		final RegularGrid grid = createGrid();
@@ -87,9 +85,25 @@ public class SolverTest {
 		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
 	}
 
+	private void checkNoChange2D(int eastIndex, int northIndex, int upIndex) {
+		final Solver solver = new Solver();
+		final RegularGrid grid = createGrid2D();
+		final Cell cell = grid.cell(eastIndex, northIndex, upIndex);
+		double pressure = cell.pressure();
+		assertNotNull(cell);
+		VelocityPressure result = solver.step(cell, 1);
+		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
+		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+	}
+
 	private RegularGrid createGrid() {
 		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
 				.cellsUp(10).density(1025).viscosity(30).build();
+	}
+
+	private RegularGrid createGrid2D() {
+		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
+				.cellsUp(1).density(1025).viscosity(30).build();
 	}
 
 	private static void checkEquals(Vector a, Vector b, double precision) {
