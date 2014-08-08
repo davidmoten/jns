@@ -236,8 +236,8 @@ public class Solver {
 				// want the pressure derivative to be zero across fluid and
 				// obstacle
 				.modifyPressure(
-						(wrt.pressure() + obstacle.position()
-								.minus(wrt.position())
+						(wrt.pressure() + wrt.position()
+								.minus(obstacle.position())
 								.dotProduct(Util.gravityForce(wrt))));
 	}
 }
