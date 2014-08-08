@@ -15,8 +15,8 @@ public class CellCreator implements Function<Indices, CellData> {
     private final Function<Indices, CellType> typeFunction;
     private final Function<Indices, Double> pressureFunction;
 
-    public CellCreator(int eastSize, int northSize, int upSize, double density,
-            double viscosity, Optional<Function<Indices, Vector>> positionFunction,
+    public CellCreator(int eastSize, int northSize, int upSize, double density, double viscosity,
+            Optional<Function<Indices, Vector>> positionFunction,
             Optional<Function<Indices, Vector>> velocityFunction,
             Optional<Function<Indices, CellType>> typeFunction,
             Optional<Function<Indices, Double>> pressureFunction) {
@@ -108,8 +108,8 @@ public class CellCreator implements Function<Indices, CellData> {
         private int eastSize;
         private int northSize;
         private int upSize;
-        private double density;
-        private double viscosity;
+        private double density = Util.SEAWATER_MEAN_DENSITY_KG_PER_M3;
+        private double viscosity = Util.SEAWATER_MEAN_VISCOSITY;
         private Optional<Function<Indices, Vector>> positionFunction = Optional.empty();
         private Optional<Function<Indices, Vector>> velocityFunction = Optional.empty();
         private Optional<Function<Indices, CellType>> typeFunction = Optional.empty();
