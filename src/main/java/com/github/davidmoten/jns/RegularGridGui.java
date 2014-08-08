@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 
 public class RegularGridGui extends Application {
 
+	private static final double MIN_SATURATION = 0.05;
+
 	private RegularGrid grid;
 
 	@Override
@@ -25,6 +27,8 @@ public class RegularGridGui extends Application {
 		Group root = new Group();
 		Canvas canvas = new Canvas(300, 250);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
+		canvas.widthProperty().addListener(o -> drawGrid(gc, grid));
+		canvas.heightProperty().addListener(o -> drawGrid(gc, grid));
 		drawGrid(gc, grid);
 		// drawShapes(gc);
 		root.getChildren().add(canvas);
@@ -34,42 +38,28 @@ public class RegularGridGui extends Application {
 
 	private void drawGrid(GraphicsContext gc, RegularGrid grid) {
 
-		double pSum = 0;
-		double pSumSquares = 0;
-		int pCount = 0;
-		double vSum = 0;
-		double vSumSquares = 0;
-		int vCount = 0;
+		Statistics pStats = new Statistics();
+		Statistics vStats = new Statistics();
 
 		// get stats
 		for (int east = 0; east <= grid.maxIndexEast(); east++)
 			for (int north = 0; north <= grid.maxIndexNorth(); north++) {
 				Cell cell = grid.cell(east, north, grid.maxIndexUp());
 				double p = cell.pressure();
-				pSum += p;
-				pSumSquares += p * p;
-				pCount++;
 				double v = cell.velocity().magnitude();
-				vSum += v;
-				vSumSquares += v * v;
-				vCount++;
+				pStats.add(p);
+				vStats.add(v);
 			}
-		double pMean = pSum / pCount;
-		double pVariance = pSumSquares / pCount - pMean * pMean;
-		double pSd = Math.sqrt(pVariance);
-
-		double vMean = vSum / vCount;
-		double vVariance = vSumSquares / vCount - vMean * vMean;
-		double vSd = Math.sqrt(vVariance);
 
 		for (int east = 0; east <= grid.maxIndexEast(); east++)
 			for (int north = 0; north <= grid.maxIndexNorth(); north++) {
-				drawCell(gc, grid, east, north, grid.maxIndexUp());
+				drawCell(gc, grid, east, north, grid.maxIndexUp(), pStats,
+						vStats);
 			}
 	}
 
 	private void drawCell(GraphicsContext gc, RegularGrid grid, int east,
-			int north, int up) {
+			int north, int up, Statistics pStats, Statistics vStats) {
 		double w = gc.getCanvas().getWidth();
 		double h = gc.getCanvas().getHeight();
 		Cell cell = grid.cell(east, north, up);
@@ -77,7 +67,9 @@ public class RegularGridGui extends Application {
 		double x1 = cellWidth * east;
 		double cellHeight = h / (grid.maxIndexNorth() + 1);
 		double y1 = h - cellHeight * (north + 1);
-		gc.setFill(toColor(0.05, Math.random()));
+		double pressure0To1 = (cell.pressure() - pStats.min())
+				/ (pStats.max() - pStats.min());
+		gc.setFill(toColor(MIN_SATURATION, pressure0To1));
 		gc.fillRect(x1, y1, cellWidth, cellHeight);
 		gc.strokeRect(x1, y1, cellWidth, cellHeight);
 

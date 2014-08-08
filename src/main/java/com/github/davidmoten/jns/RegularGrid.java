@@ -17,6 +17,8 @@ public class RegularGrid {
 	private final double density;// 1025;
 	private final double viscosity = 30;
 
+	// private ConcurrentHashMap<Indices, Cell> cells;
+
 	private RegularGrid(int cellsEast, int cellsNorth, int cellsUp,
 			double cellSizeEast, double cellSizeNorth, double cellSizeUp,
 			double density, double viscosity) {
