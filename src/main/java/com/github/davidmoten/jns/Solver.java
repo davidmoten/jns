@@ -3,6 +3,7 @@ package com.github.davidmoten.jns;
 import static com.github.davidmoten.jns.CellType.FLUID;
 import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
+import static com.github.davidmoten.jns.NewtonsMethod.solve;
 import static com.github.davidmoten.jns.Util.gravityForce;
 import static com.github.davidmoten.jns.Util.unexpected;
 
@@ -12,6 +13,9 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Navier-Stokes equation solver for incompressible fluid.
+ */
 public class Solver {
 
 	private static Logger log = LoggerFactory.getLogger(Solver.class);
@@ -27,21 +31,17 @@ public class Solver {
 
 	private double solveForPressure(Cell cell,
 			Function<Double, Double> continuityFunction) {
-		// TODO what values for h,precision?
-		final double h = 1;
+		// 10 Pa is probably reasonable given that pressures are normally
+		// >100000Pa.
+		final double delta = 100;// Pa
+		// TODO what value for precision?
 		final double precision = 10;
 		final int maxIterations = 15;
-		final Optional<Double> p = NewtonsMethod.solve(continuityFunction,
-				cell.pressure(), h, precision, maxIterations);
-		double newPressure;
-		if (p.isPresent())
-			if (p.get() < 0)
-				newPressure = cell.pressure();
-			else
-				newPressure = p.get();
-		else
-			newPressure = cell.pressure();
-		return newPressure;
+		final Optional<Double> p = solve(continuityFunction, cell.pressure(),
+				delta, precision, maxIterations)
+		// don't accept negative values
+				.filter(d -> d >= 0);
+		return p.orElse(cell.pressure());
 	}
 
 	// Visible for testing
@@ -183,7 +183,6 @@ public class Solver {
 			return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
 		else
 			return unexpected("not handled " + t);
-
 	}
 
 	private double getGradientFromFluid(Function<Cell, Double> f, Cell c1,
@@ -223,14 +222,22 @@ public class Solver {
 				&& (t.c3().type() == ct3 || ct3 == ANY);
 	}
 
-	private static Cell obstacleToValue(Cell obstacle, Cell withRespectTo) {
-		return withRespectTo.modifyVelocity(Vector.ZERO)
+	/**
+	 * Returns a {@link Cell} representation of an obstacle that exists with
+	 * respect to the the cell <code>wrt</code>.
+	 * 
+	 * @param obstacle
+	 * @param wrt
+	 * @return
+	 */
+	private static Cell obstacleToValue(Cell obstacle, Cell wrt) {
+		return wrt.modifyVelocity(Vector.ZERO)
 				.modifyPosition(obstacle.position())
-				// want the pressure derivative to be zero across water and
+				// want the pressure derivative to be zero across fluid and
 				// obstacle
 				.modifyPressure(
-						(withRespectTo.pressure() + obstacle.position()
-								.minus(withRespectTo.position())
-								.dotProduct(Util.gravityForce(withRespectTo))));
+						(wrt.pressure() + obstacle.position()
+								.minus(wrt.position())
+								.dotProduct(Util.gravityForce(wrt))));
 	}
 }
