@@ -24,8 +24,8 @@ public class MeshGui extends Application {
 				.builder()
 				.cellSize(1)
 				.creator(
-						new RegularGridCellCreator(cellsEast, cellsNorth, cellsUp,
-								Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
+						new RegularGridCellCreator(cellsEast, cellsNorth,
+								cellsUp, Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
 								Util.SEAWATER_MEAN_VISCOSITY)).build();
 	}
 
@@ -33,7 +33,7 @@ public class MeshGui extends Application {
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Drawing Operations Test");
 		Group root = new Group();
-		Canvas canvas = new Canvas(300, 250);
+		Canvas canvas = new Canvas(600, 600);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		canvas.widthProperty().addListener(o -> drawGrid(gc, mesh));
 		canvas.heightProperty().addListener(o -> drawGrid(gc, mesh));
@@ -54,7 +54,8 @@ public class MeshGui extends Application {
 			for (int north = 0; north <= cellsNorth; north++) {
 				Cell cell = grid.cell(east, north, cellsUp);
 				double p = cell.pressure();
-				double v = cell.velocity().magnitude();
+				double v = magnitudeEastNorth(cell.velocity());
+				v = 1;
 				pStats.add(p);
 				vStats.add(v);
 			}
@@ -65,8 +66,12 @@ public class MeshGui extends Application {
 			}
 	}
 
-	private void drawCell(GraphicsContext gc, Mesh grid, int east,
-			int north, int up, Statistics pStats, Statistics vStats) {
+	private double magnitudeEastNorth(Vector v) {
+		return Math.sqrt(v.east() * v.east() + v.north() * v.north());
+	}
+
+	private void drawCell(GraphicsContext gc, Mesh grid, int east, int north,
+			int up, Statistics pStats, Statistics vStats) {
 		double w = gc.getCanvas().getWidth();
 		double h = gc.getCanvas().getHeight();
 		Cell cell = grid.cell(east, north, up);
@@ -76,9 +81,31 @@ public class MeshGui extends Application {
 		double y1 = h - cellHeight * (north + 1);
 		double pressure0To1 = (cell.pressure() - pStats.min())
 				/ (pStats.max() - pStats.min());
+
 		gc.setFill(toColor(MIN_SATURATION, pressure0To1));
 		gc.fillRect(x1, y1, cellWidth, cellHeight);
+		gc.setStroke(Color.DARKGRAY);
 		gc.strokeRect(x1, y1, cellWidth, cellHeight);
+
+		Vector v = cell.velocity();
+		v = Vector.create(2 * (Math.random() - 0.5), 2 * (Math.random() - 0.5),
+				Math.random());
+		System.out.println(v);
+		if (vStats.max() > 0) {
+			double magnitudeEastNorth = magnitudeEastNorth(v);
+			double vProportion = magnitudeEastNorth / vStats.max();
+			double centreX = x1 + cellWidth / 2;
+			double centreY = y1 + cellHeight / 2;
+			double deltaX = v.east() / magnitudeEastNorth * vProportion
+					* cellWidth / 2;
+			double deltaY = v.north() / magnitudeEastNorth * vProportion
+					* cellHeight / 2;
+
+			gc.setStroke(Color.DARKBLUE);
+			System.out.println(centreX + "," + centreY + "->"
+					+ (centreX + deltaX) + "," + (centreY + deltaY));
+			gc.strokeLine(centreX, centreY, centreX + deltaX, centreY + deltaY);
+		}
 
 	}
 
