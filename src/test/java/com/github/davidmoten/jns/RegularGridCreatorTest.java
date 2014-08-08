@@ -11,7 +11,7 @@ public class RegularGridCreatorTest {
 
 	@Test
 	public void testBottomOfRegularGridCellType() {
-		RegularGrid grid = createGrid();
+		Mesh grid = createGrid();
 		Cell cell = grid.cell(5, 5, 0);
 		assertEquals(CellType.FLUID, cell.type());
 		assertEquals(CellType.FLUID, cell.neighbour(Direction.UP, 1).type());

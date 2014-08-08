@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-public class RegularGrid {
+public class Mesh {
 
 	private final double cellSizeEast;
 	private final double cellSizeNorth;
@@ -15,7 +15,7 @@ public class RegularGrid {
 	private final ConcurrentHashMap<Indices, Cell> cells = new ConcurrentHashMap<>();
 	private final Function<Indices, CellData> creator;
 
-	private RegularGrid(Function<Indices, CellData> creator,
+	private Mesh(Function<Indices, CellData> creator,
 			double cellSizeEast, double cellSizeNorth, double cellSizeUp,
 			double density, double viscosity) {
 		this.creator = creator;
@@ -42,7 +42,7 @@ public class RegularGrid {
 		Indices indices = new Indices(indexEast, indexNorth, indexUp);
 		if (cells.get(indices) == null) {
 			CellData cellData = creator.apply(indices);
-			cells.putIfAbsent(indices, new RegularGridCell(this, indexEast,
+			cells.putIfAbsent(indices, new MeshCell(this, indexEast,
 					indexNorth, indexUp, cellData));
 		}
 		return cells.get(indices);
@@ -101,8 +101,8 @@ public class RegularGrid {
 			return this;
 		}
 
-		public RegularGrid build() {
-			return new RegularGrid(creator, cellSizeEast, cellSizeNorth,
+		public Mesh build() {
+			return new Mesh(creator, cellSizeEast, cellSizeNorth,
 					cellSizeUp, density, viscosity);
 		}
 	}

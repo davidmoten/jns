@@ -9,22 +9,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
 
-public class RegularGridGui extends Application {
+public class MeshGui extends Application {
 
 	private static final double MIN_SATURATION = 0.05;
 
-	private RegularGrid grid;
+	private Mesh mesh;
 	private final int cellsEast = 10;
 	private final int cellsNorth = 10;
 	private final int cellsUp = 1;
 
 	@Override
 	public void init() throws Exception {
-		grid = RegularGrid
+		mesh = Mesh
 				.builder()
 				.cellSize(1)
 				.creator(
-						new RegularGridCreator(cellsEast, cellsNorth, cellsUp,
+						new RegularGridCellCreator(cellsEast, cellsNorth, cellsUp,
 								Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
 								Util.SEAWATER_MEAN_VISCOSITY)).build();
 	}
@@ -35,16 +35,16 @@ public class RegularGridGui extends Application {
 		Group root = new Group();
 		Canvas canvas = new Canvas(300, 250);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		canvas.widthProperty().addListener(o -> drawGrid(gc, grid));
-		canvas.heightProperty().addListener(o -> drawGrid(gc, grid));
-		drawGrid(gc, grid);
+		canvas.widthProperty().addListener(o -> drawGrid(gc, mesh));
+		canvas.heightProperty().addListener(o -> drawGrid(gc, mesh));
+		drawGrid(gc, mesh);
 		// drawShapes(gc);
 		root.getChildren().add(canvas);
 		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 	}
 
-	private void drawGrid(GraphicsContext gc, RegularGrid grid) {
+	private void drawGrid(GraphicsContext gc, Mesh grid) {
 
 		Statistics pStats = new Statistics();
 		Statistics vStats = new Statistics();
@@ -65,7 +65,7 @@ public class RegularGridGui extends Application {
 			}
 	}
 
-	private void drawCell(GraphicsContext gc, RegularGrid grid, int east,
+	private void drawCell(GraphicsContext gc, Mesh grid, int east,
 			int north, int up, Statistics pStats, Statistics vStats) {
 		double w = gc.getCanvas().getWidth();
 		double h = gc.getCanvas().getHeight();

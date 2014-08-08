@@ -29,7 +29,7 @@ public class SolverTest {
 	@Test
 	public void testGetVelocityAfterTimeWithRegularGridStillWater() {
 		final Solver solver = new Solver();
-		final RegularGrid grid = createGrid();
+		final Mesh grid = createGrid();
 		final Cell cell = grid.cell(5, 5, 5);
 		assertNotNull(cell);
 		Vector result = solver.getVelocityAfterTime(cell, 1);
@@ -78,7 +78,7 @@ public class SolverTest {
 
 	private void checkNoChange(int eastIndex, int northIndex, int upIndex) {
 		final Solver solver = new Solver();
-		final RegularGrid grid = createGrid();
+		final Mesh grid = createGrid();
 		final Cell cell = grid.cell(eastIndex, northIndex, upIndex);
 		double pressure = cell.pressure();
 		assertNotNull(cell);
@@ -89,7 +89,7 @@ public class SolverTest {
 
 	private void checkNoChange2D(int eastIndex, int northIndex, int upIndex) {
 		final Solver solver = new Solver();
-		final RegularGrid grid = createGrid2D();
+		final Mesh grid = createGrid2D();
 		final Cell cell = grid.cell(eastIndex, northIndex, upIndex);
 		double pressure = cell.pressure();
 		assertNotNull(cell);

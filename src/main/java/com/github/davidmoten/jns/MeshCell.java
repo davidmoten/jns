@@ -1,15 +1,15 @@
 package com.github.davidmoten.jns;
 
 /**
- * A box of regularly spaced points with OBSTACLE at the floor, AIR above and
- * UNKNOWN on the sides.
- *
+ * A cell in a possible irregular mesh with the rule that every cell has a
+ * single neighbour to north, south, west, east, up, down for the purposes of
+ * differential calculations.
  */
-public class RegularGridCell implements Cell {
+public class MeshCell implements Cell {
 
 	private final CellType type;
 	private final Vector position;
-	private final RegularGrid regularGrid;
+	private final Mesh mesh;
 	private final int indexEast;
 	private final int indexNorth;
 	private final int indexUp;
@@ -18,9 +18,9 @@ public class RegularGridCell implements Cell {
 	private final double density;
 	private final double viscosity;
 
-	RegularGridCell(RegularGrid regularGrid, int indexEast, int indexNorth,
-			int indexUp, CellData cellData) {
-		this.regularGrid = regularGrid;
+	MeshCell(Mesh mesh, int indexEast, int indexNorth, int indexUp,
+			CellData cellData) {
+		this.mesh = mesh;
 		this.indexEast = indexEast;
 		this.indexNorth = indexNorth;
 		this.indexUp = indexUp;
@@ -65,11 +65,11 @@ public class RegularGridCell implements Cell {
 	@Override
 	public Cell neighbour(Direction direction, int count) {
 		if (direction == Direction.EAST)
-			return regularGrid.cell(indexEast + count, indexNorth, indexUp);
+			return mesh.cell(indexEast + count, indexNorth, indexUp);
 		else if (direction == Direction.NORTH)
-			return regularGrid.cell(indexEast, indexNorth + count, indexUp);
+			return mesh.cell(indexEast, indexNorth + count, indexUp);
 		else if (direction == Direction.UP)
-			return regularGrid.cell(indexEast, indexNorth, indexUp + count);
+			return mesh.cell(indexEast, indexNorth, indexUp + count);
 		else
 			return Util.unexpected();
 	}

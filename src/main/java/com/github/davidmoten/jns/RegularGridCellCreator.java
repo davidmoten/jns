@@ -2,7 +2,7 @@ package com.github.davidmoten.jns;
 
 import java.util.function.Function;
 
-public class RegularGridCreator implements Function<Indices, CellData> {
+public class RegularGridCellCreator implements Function<Indices, CellData> {
 
 	private final int eastSize;
 	private final int northSize;
@@ -10,7 +10,7 @@ public class RegularGridCreator implements Function<Indices, CellData> {
 	private final double density;
 	private final double viscosity;
 
-	public RegularGridCreator(int eastSize, int northSize, int upSize,
+	public RegularGridCellCreator(int eastSize, int northSize, int upSize,
 			double density, double viscosity) {
 		this.eastSize = eastSize;
 		this.northSize = northSize;
@@ -19,7 +19,7 @@ public class RegularGridCreator implements Function<Indices, CellData> {
 		this.viscosity = viscosity;
 	}
 
-	public RegularGridCreator(int eastSize, int northSize, int upSize) {
+	public RegularGridCellCreator(int eastSize, int northSize, int upSize) {
 		this(eastSize, northSize, upSize, Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
 				Util.SEAWATER_MEAN_VISCOSITY);
 	}
