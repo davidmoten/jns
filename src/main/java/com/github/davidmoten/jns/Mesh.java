@@ -10,28 +10,16 @@ public class Mesh {
     private final double cellSizeEast;
     private final double cellSizeNorth;
     private final double cellSizeUp;
-    private final double density;// 1025;
-    private final double viscosity;// 30
 
     private final ConcurrentHashMap<Indices, Cell> cells = new ConcurrentHashMap<>();
     private final Function<Indices, CellData> creator;
 
     private Mesh(Function<Indices, CellData> creator, double cellSizeEast, double cellSizeNorth,
-            double cellSizeUp, double density, double viscosity) {
+            double cellSizeUp) {
         this.creator = creator;
         this.cellSizeEast = cellSizeEast;
         this.cellSizeNorth = cellSizeNorth;
         this.cellSizeUp = cellSizeUp;
-        this.density = density;
-        this.viscosity = viscosity;
-    }
-
-    public double density() {
-        return density;
-    }
-
-    public double viscosity() {
-        return viscosity;
     }
 
     public Collection<Cell> cells() {
@@ -58,8 +46,6 @@ public class Mesh {
     public static class Builder {
 
         private Function<Indices, CellData> creator;
-        private double density = 1025;
-        private double viscosity = 30;
         private double cellSizeEast;
         private double cellSizeNorth;
         private double cellSizeUp;
@@ -94,18 +80,8 @@ public class Mesh {
             return this;
         }
 
-        public Builder density(double density) {
-            this.density = density;
-            return this;
-        }
-
-        public Builder viscosity(double viscosity) {
-            this.viscosity = viscosity;
-            return this;
-        }
-
         public Mesh build() {
-            return new Mesh(creator, cellSizeEast, cellSizeNorth, cellSizeUp, density, viscosity);
+            return new Mesh(creator, cellSizeEast, cellSizeNorth, cellSizeUp);
         }
     }
 
@@ -149,12 +125,12 @@ public class Mesh {
 
             @Override
             public double density() {
-                return density;
+                return m.cell(i).density();
             }
 
             @Override
             public double viscosity() {
-                return viscosity;
+                return m.cell(i).viscosity();
             }
 
             private VelocityPressure velocityPressure() {
@@ -166,6 +142,6 @@ public class Mesh {
                 }
                 return vp.get();
             }
-        }, cellSizeEast, cellSizeNorth, cellSizeUp, density, viscosity);
+        }, cellSizeEast, cellSizeNorth, cellSizeUp);
     }
 }
