@@ -2,6 +2,7 @@ package com.github.davidmoten.jns;
 
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,27 +12,46 @@ import com.github.davidmoten.jns.CellImpl.Builder;
 
 public class SolverTest {
 
+	private static final double VELOCITY_PRECISION = 0.0000001;
 	private static final Logger log = LoggerFactory.getLogger(SolverTest.class);
+	private static final double PRESSURE_PRECISION = 0.01;
 
 	@Test
 	public void testGetVelocityAfterTime() {
 		final Solver solver = new Solver();
 		final Vector result = solver.getVelocityAfterTime(createCell(), 1);
 		log.info("velocityAfterTime={}", result);
-		assertEquals2(Vector.ZERO, result, 0.0000001);
+		checkEquals(Vector.ZERO, result, VELOCITY_PRECISION);
 	}
 
 	@Test
-	public void testSolverWithRegularGridStillWater() {
+	public void testGetVelocityAfterTimeWithRegularGridStillWater() {
 		final Solver solver = new Solver();
-		final RegularGrid grid = RegularGrid.builder().cellSize(1)
-				.cellsEast(10).cellsNorth(10).cellsUp(10).density(1025)
-				.viscosity(30).build();
+		final RegularGrid grid = createGrid();
 		final Cell cell = grid.cell(5, 5, 5);
-		VelocityPressure result = solver.step(cell, 1);
+		assertNotNull(cell);
+		Vector result = solver.getVelocityAfterTime(cell, 1);
+		checkEquals(Vector.ZERO, result, VELOCITY_PRECISION);
 	}
 
-	private static void assertEquals2(Vector a, Vector b, double precision) {
+	@Test
+	public void testStepWithRegularGridStillWater() {
+		final Solver solver = new Solver();
+		final RegularGrid grid = createGrid();
+		final Cell cell = grid.cell(5, 5, 5);
+		double pressure = cell.pressure();
+		assertNotNull(cell);
+		VelocityPressure result = solver.step(cell, 1);
+		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
+		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+	}
+
+	private RegularGrid createGrid() {
+		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
+				.cellsUp(10).density(1025).viscosity(30).build();
+	}
+
+	private static void checkEquals(Vector a, Vector b, double precision) {
 		assertEquals(a.east(), b.east(), precision);
 	}
 
