@@ -50,13 +50,6 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
-Lazy computation
--------------------
-
-What would be nice is the ability to only calculate what we need for the output. For instance in a 10x10x10 grid
-if I want to know the value of velocity at (5,5,5) after 2 time steps then clearly the whole grid does not have
-to be computed for the two time steps. 
-
 Architecture
 --------------
 Aim is to provide an implementation that is 
@@ -69,3 +62,11 @@ Aim is to provide an implementation that is
 Unit tests will be created for regular grid meshes.
 
 The [Solver](src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fdavidmoten%2Fjns%2FSolver.java) class is the main entry point.
+
+
+Lazy computation
+-------------------
+
+What would be nice is the ability to only calculate what we need for the output. For instance in a 10x10x10 grid
+if I want to know the value of velocity at (5,5,5) after 2 time steps then clearly the whole grid does not have
+to be computed for the two time steps. 
