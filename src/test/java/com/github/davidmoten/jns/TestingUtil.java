@@ -42,8 +42,8 @@ class TestingUtil {
                 .builder()
                 .cellSize(1)
                 .creator(
-                        CellCreator.builder().eastSize(cellsEast).northSize(cellsNorth).upSize(1)
-                        .typeFunction(typeFunction).velocityFunction(velocityFunction)
-                        .build()).build();
+                        CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
+                                .cellsUp(cellsUp).typeFunction(typeFunction)
+                                .velocityFunction(velocityFunction).build()).build();
     }
 }

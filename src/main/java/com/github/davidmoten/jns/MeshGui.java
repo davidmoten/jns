@@ -23,8 +23,8 @@ public class MeshGui extends Application {
                 .builder()
                 .cellSize(1)
                 .creator(
-                        CellCreator.builder().eastSize(cellsEast).northSize(cellsNorth)
-                                .upSize(cellsUp).build()).build();
+                        CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
+                                .cellsUp(cellsUp).build()).build();
     }
 
     @Override

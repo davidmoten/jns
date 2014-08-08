@@ -118,17 +118,17 @@ public class CellCreator implements Function<Indices, CellData> {
         private Builder() {
         }
 
-        public Builder eastSize(int eastSize) {
+        public Builder cellsEast(int eastSize) {
             this.eastSize = eastSize;
             return this;
         }
 
-        public Builder northSize(int northSize) {
+        public Builder cellsNorth(int northSize) {
             this.northSize = northSize;
             return this;
         }
 
-        public Builder upSize(int upSize) {
+        public Builder cellsUp(int upSize) {
             this.upSize = upSize;
             return this;
         }
