@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ArcType;
 import javafx.stage.Stage;
 
 public class MeshGui extends Application {
@@ -25,7 +24,7 @@ public class MeshGui extends Application {
                 .cellSize(1)
                 .creator(
                         CellCreator.builder().eastSize(cellsEast).northSize(cellsNorth)
-                        .upSize(cellsUp).build()).build();
+                                .upSize(cellsUp).build()).build();
     }
 
     @Override
@@ -37,7 +36,6 @@ public class MeshGui extends Application {
         canvas.widthProperty().addListener(o -> drawGrid(gc, mesh));
         canvas.heightProperty().addListener(o -> drawGrid(gc, mesh));
         drawGrid(gc, mesh);
-        // drawShapes(gc);
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -53,8 +51,7 @@ public class MeshGui extends Application {
             for (int north = 0; north <= cellsNorth; north++) {
                 final Cell cell = grid.cell(east, north, cellsUp);
                 final double p = cell.pressure();
-                double v = magnitudeEastNorth(cell.velocity());
-                v = 1;
+                final double v = magnitudeEastNorth(cell.velocity());
                 pStats.add(p);
                 vStats.add(v);
             }
@@ -86,9 +83,7 @@ public class MeshGui extends Application {
         gc.setStroke(Color.DARKGRAY);
         gc.strokeRect(x1, y1, cellWidth, cellHeight);
 
-        Vector v = cell.velocity();
-        v = Vector.create(2 * (Math.random() - 0.5), 2 * (Math.random() - 0.5), Math.random());
-        System.out.println(v);
+        final Vector v = cell.velocity();
         if (vStats.max() > 0) {
             final double magnitudeEastNorth = magnitudeEastNorth(v);
             final double vProportion = magnitudeEastNorth / vStats.max();
@@ -98,8 +93,6 @@ public class MeshGui extends Application {
             final double deltaY = v.north() / magnitudeEastNorth * vProportion * cellHeight / 2;
 
             gc.setStroke(Color.DARKBLUE);
-            System.out.println(centreX + "," + centreY + "->" + (centreX + deltaX) + ","
-                    + (centreY + deltaY));
             gc.strokeLine(centreX, centreY, centreX + deltaX, centreY + deltaY);
         }
 
@@ -107,28 +100,6 @@ public class MeshGui extends Application {
 
     private static Color toColor(double minSaturation, double prop) {
         return Color.hsb(0.0, (prop * (1 - minSaturation) + minSaturation), 1.0);
-    }
-
-    private void drawShapes(GraphicsContext gc) {
-
-        gc.setFill(Color.GREEN);
-        gc.setStroke(Color.BLUE);
-        gc.setLineWidth(5);
-        gc.strokeLine(40, 10, 10, 40);
-        gc.fillOval(10, 60, 30, 30);
-        gc.strokeOval(60, 60, 30, 30);
-        gc.fillRoundRect(110, 60, 30, 30, 10, 10);
-        gc.strokeRoundRect(160, 60, 30, 30, 10, 10);
-        gc.fillArc(10, 110, 30, 30, 45, 240, ArcType.OPEN);
-        gc.fillArc(60, 110, 30, 30, 45, 240, ArcType.CHORD);
-        gc.fillArc(110, 110, 30, 30, 45, 240, ArcType.ROUND);
-        gc.strokeArc(10, 160, 30, 30, 45, 240, ArcType.OPEN);
-        gc.strokeArc(60, 160, 30, 30, 45, 240, ArcType.CHORD);
-        gc.strokeArc(110, 160, 30, 30, 45, 240, ArcType.ROUND);
-        gc.fillPolygon(new double[] { 10, 40, 10, 40 }, new double[] { 210, 210, 240, 240 }, 4);
-        gc.strokePolygon(new double[] { 60, 90, 60, 90 }, new double[] { 210, 210, 240, 240 }, 4);
-        gc.strokePolyline(new double[] { 110, 140, 110, 140 }, new double[] { 210, 210, 240, 240 },
-                4);
     }
 
     public static void main(String[] args) {
