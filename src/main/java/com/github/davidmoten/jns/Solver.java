@@ -223,13 +223,15 @@ public class Solver {
 				&& (t.c3().type() == ct3 || ct3 == ANY);
 	}
 
-	private static Cell obstacleToValue(Cell obstacle, Cell point) {
-		return point
+	private static Cell obstacleToValue(Cell obstacle, Cell withRespectTo) {
+		return withRespectTo
 				.modifyVelocity(Vector.ZERO)
 				.modifyPosition(obstacle.position())
+				// want the pressure derivative to be zero across water and
+				// obstacle
 				.modifyPressure(
-						(point.pressure() + obstacle.position()
-								.minus(point.position())
-								.dotProduct(Util.gravityForce(point))));
+						(withRespectTo.pressure() + obstacle.position()
+								.minus(withRespectTo.position())
+								.dotProduct(Util.gravityForce(withRespectTo))));
 	}
 }
