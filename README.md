@@ -53,7 +53,11 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 Architecture
 --------------
-Aim is to provide an implementation that is as much as possible independent of the chosen mesh (regular or irregular) and thus to defer calculations of say first and second derivatives to be particular to the mesh type.
+Aim is to provide an implementation that is 
+
+* decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease
+* accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion
+* consider using lazy computation 
 
 Unit tests will be created for regular grid meshes.
 
