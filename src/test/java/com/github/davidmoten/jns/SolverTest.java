@@ -88,7 +88,7 @@ public class SolverTest {
         final Cell cell = mesh.cell(5, 9, 0);
         assertEquals(1.0, cell.velocity().east(), VELOCITY_PRECISION);
         assertEquals(0.0, cell.neighbour(Direction.NORTH, -1).velocity().east(), VELOCITY_PRECISION);
-        final Mesh mesh2 = mesh.step(1);
+        final Mesh mesh2 = mesh.step(1).step(1);
         final Cell cell2 = mesh2.cell(5, 9, 0);
         assertEquals(1.0, cell2.velocity().east(), VELOCITY_PRECISION);
         assertEquals(0.0, cell2.neighbour(Direction.NORTH, -1).velocity().east(),
