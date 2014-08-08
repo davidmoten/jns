@@ -224,8 +224,7 @@ public class Solver {
 	}
 
 	private static Cell obstacleToValue(Cell obstacle, Cell withRespectTo) {
-		return withRespectTo
-				.modifyVelocity(Vector.ZERO)
+		return withRespectTo.modifyVelocity(Vector.ZERO)
 				.modifyPosition(obstacle.position())
 				// want the pressure derivative to be zero across water and
 				// obstacle

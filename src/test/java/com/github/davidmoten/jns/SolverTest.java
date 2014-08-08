@@ -58,6 +58,18 @@ public class SolverTest {
 		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
 	}
 
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromSurfaceOfGrid() {
+		final Solver solver = new Solver();
+		final RegularGrid grid = createGrid();
+		final Cell cell = grid.cell(5, 5, 9);
+		double pressure = cell.pressure();
+		assertNotNull(cell);
+		VelocityPressure result = solver.step(cell, 1);
+		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
+		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+	}
+
 	private RegularGrid createGrid() {
 		return RegularGrid.builder().cellSize(1).cellsEast(10).cellsNorth(10)
 				.cellsUp(10).density(1025).viscosity(30).build();
