@@ -3,6 +3,7 @@ package com.github.davidmoten.jns;
 import static com.github.davidmoten.jns.CellType.FLUID;
 import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
+import static com.github.davidmoten.jns.Util.gravityForce;
 import static com.github.davidmoten.jns.Util.unexpected;
 
 import java.util.Optional;
@@ -14,8 +15,6 @@ import org.slf4j.LoggerFactory;
 public class Solver {
 
 	private static Logger log = LoggerFactory.getLogger(Solver.class);
-
-	private final static Vector GRAVITY = Vector.create(0, 0, -9.80665);
 
 	public VelocityPressure step(Cell cell, double timeStepSeconds) {
 		// explicit time advance scheme as per Ferziger and Peric 7.3.2
@@ -56,7 +55,7 @@ public class Solver {
 		final Matrix velocityJacobian = getVelocityJacobian(cell);
 		final Vector divergenceOfStress = velocityLaplacian
 				.times(cell.viscosity()).minus(pressureGradient)
-				.add(GRAVITY.times(cell.density()));
+				.add(gravityForce(cell));
 		final Vector result = divergenceOfStress.divideBy(cell.density())
 				.minus(velocityJacobian.times(cell.velocity()));
 		return result;
@@ -165,6 +164,28 @@ public class Solver {
 		}
 	}
 
+	private static CellTriplet transform(Cell c1, Cell c2, Cell c3) {
+		return transform(CellTriplet.create(c1, c2, c3));
+	}
+
+	private static CellTriplet transform(CellTriplet t) {
+		if (is(FLUID, FLUID, FLUID, t))
+			return t;
+		else if (is(FLUID, FLUID, UNKNOWN, t))
+			return t;
+		else if (t.c2().type() == OBSTACLE)
+			return t;
+		else if (is(UNKNOWN, FLUID, FLUID, t))
+			return CellTriplet.create(t.c2(), t.c3(), t.c1());
+		else if (is(ANY, FLUID, OBSTACLE, t))
+			return transform(t.c1(), t.c2(), obstacleToValue(t.c3(), t.c2()));
+		else if (is(OBSTACLE, FLUID, ANY, t))
+			return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
+		else
+			return unexpected("not handled " + t);
+
+	}
+
 	private double getGradientFromFluid(Function<Cell, Double> f, Cell c1,
 			Cell c2, Direction d, DerivativeType derivativeType) {
 		if (derivativeType == DerivativeType.FIRST) {
@@ -192,37 +213,23 @@ public class Solver {
 		return d * d;
 	}
 
+	private static CellType ANY = null;
+
 	private static boolean is(CellType ct1, CellType ct2, CellType ct3,
 			CellTriplet t) {
 
-		return t.c1().type() == ct1 && t.c2().type() == ct2
-				&& t.c3().type() == ct3;
-	}
-
-	private static CellTriplet transform(CellTriplet t) {
-		if (is(FLUID, FLUID, FLUID, t))
-			return t;
-		else if (is(FLUID, FLUID, UNKNOWN, t))
-			return t;
-		else if (t.c2().type() == OBSTACLE)
-			return t;
-		else if (is(UNKNOWN, FLUID, FLUID, t))
-			return CellTriplet.create(t.c2(), t.c3(), t.c1());
-		else if (t.c2().type() == FLUID && t.c3().type() == OBSTACLE)
-			return transform(t.c1(), t.c2(), obstacleToValue(t.c3(), t.c2()));
-		else if (t.c2().type() == FLUID && t.c1().type() == OBSTACLE)
-			return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
-		else
-			return unexpected("not handled " + t);
-
+		return (t.c1().type() == ct1 || ct1 == ANY)
+				&& (t.c2().type() == ct2 || ct2 == ANY)
+				&& (t.c3().type() == ct3 || ct3 == ANY);
 	}
 
 	private static Cell obstacleToValue(Cell obstacle, Cell point) {
-		return point.modifyVelocity(Vector.ZERO).modifyPosition(
-				obstacle.position());
-	}
-
-	private static CellTriplet transform(Cell c1, Cell c2, Cell c3) {
-		return transform(CellTriplet.create(c1, c2, c3));
+		return point
+				.modifyVelocity(Vector.ZERO)
+				.modifyPosition(obstacle.position())
+				.modifyPressure(
+						(point.pressure() + obstacle.position()
+								.minus(point.position())
+								.dotProduct(Util.gravityForce(point))));
 	}
 }

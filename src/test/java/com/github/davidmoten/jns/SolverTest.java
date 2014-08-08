@@ -12,8 +12,8 @@ import com.github.davidmoten.jns.CellImpl.Builder;
 
 public class SolverTest {
 
-	private static final double VELOCITY_PRECISION = 0.0000001;
 	private static final Logger log = LoggerFactory.getLogger(SolverTest.class);
+	private static final double VELOCITY_PRECISION = 0.0000001;
 	private static final double PRESSURE_PRECISION = 0.01;
 
 	@Test
@@ -35,10 +35,22 @@ public class SolverTest {
 	}
 
 	@Test
-	public void testStepWithRegularGridStillWater() {
+	public void testStepWithRegularGridStillWaterCellFromCentreOfGrid() {
 		final Solver solver = new Solver();
 		final RegularGrid grid = createGrid();
 		final Cell cell = grid.cell(5, 5, 5);
+		double pressure = cell.pressure();
+		assertNotNull(cell);
+		VelocityPressure result = solver.step(cell, 1);
+		checkEquals(Vector.ZERO, result.getVelocity(), VELOCITY_PRECISION);
+		assertEquals(pressure, result.getPressure(), PRESSURE_PRECISION);
+	}
+
+	@Test
+	public void testStepWithRegularGridStillWaterCellFromBottomOfGrid() {
+		final Solver solver = new Solver();
+		final RegularGrid grid = createGrid();
+		final Cell cell = grid.cell(5, 5, 0);
 		double pressure = cell.pressure();
 		assertNotNull(cell);
 		VelocityPressure result = solver.step(cell, 1);
