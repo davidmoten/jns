@@ -17,7 +17,7 @@ class TestingUtil {
         final int cellsEast = 10;
         final int cellsNorth = 10;
         final Function<Indices, CellType> typeFunction = i -> {
-            // Floored bottom, unknown other boundaries
+            // Floored bottom, obstacle sides, open north side
             if (i.up() < 0)
                 return CellType.OBSTACLE;
             else if (i.up() > cellsUp - 1)
