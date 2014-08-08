@@ -2,6 +2,7 @@ package com.github.davidmoten.jns;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class Mesh {
@@ -44,6 +45,10 @@ public class Mesh {
             cells.putIfAbsent(indices, new MeshCell(this, indexEast, indexNorth, indexUp, cellData));
         }
         return cells.get(indices);
+    }
+
+    public Cell cell(Indices ind) {
+        return cell(ind.east(), ind.north(), ind.up());
     }
 
     public static Builder builder() {
@@ -116,4 +121,51 @@ public class Mesh {
         return cellSizeUp;
     }
 
+    public Mesh step(double timeStepSeconds) {
+        final Mesh m = this;
+        final Solver solver = new Solver();
+        return new Mesh(i -> new CellData() {
+            final AtomicReference<VelocityPressure> vp = new AtomicReference<VelocityPressure>();
+
+            @Override
+            public CellType type() {
+                return m.cell(i).type();
+            }
+
+            @Override
+            public Vector position() {
+                return m.cell(i).position();
+            }
+
+            @Override
+            public double pressure() {
+                return velocityPressure().getPressure();
+            }
+
+            @Override
+            public Vector velocity() {
+                return velocityPressure().getVelocity();
+            }
+
+            @Override
+            public double density() {
+                return density;
+            }
+
+            @Override
+            public double viscosity() {
+                return viscosity;
+            }
+
+            private VelocityPressure velocityPressure() {
+                if (vp.get() == null) {
+                    synchronized (vp) {
+                        if (vp.get() == null)
+                            vp.set(solver.step(m.cell(i), timeStepSeconds));
+                    }
+                }
+                return vp.get();
+            }
+        }, cellSizeEast, cellSizeNorth, cellSizeUp, density, viscosity);
+    }
 }
