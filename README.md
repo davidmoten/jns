@@ -70,6 +70,7 @@ Aim is to provide an implementation that is
 * ideally the algorithm should be clearly visible in the code. Abstractions around arrays etc will be provided to reduce noise.
 * accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
 * consider using lazy computation
+* minimize pollution of code with data structure choices
 
 Unit tests will be created for regular grid meshes.
 
