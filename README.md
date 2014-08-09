@@ -56,9 +56,9 @@ Numerical approximations for the derivatives (first and second) of a function f 
 
 Suppose the point x has two close neighbours a,b (a<x<b)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&delta;f/&delta;x = (f(b) - f(a))/(b - a)
+&nbsp;&nbsp;&nbsp;&nbsp;&delta;f'(x) = (f(b) - f(a))/(b - a)
 
-&nbsp;&nbsp;&nbsp;&nbsp;&delta;<sup>2</sup>f/&delta;x<sup>2</sup> = (f(b) + f(a) - 2f(x))/(b-a)<sup>2</sup>
+&nbsp;&nbsp;&nbsp;&nbsp;&delta;f''(x) = (f(b) + f(a) - 2f(x))/(b-a)<sup>2</sup>
 
 Architecture
 --------------
