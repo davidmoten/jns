@@ -37,7 +37,7 @@ public class Solver {
         final int maxIterations = 15;
         final Optional<Double> p = solve(continuityFunction, cell.pressure(), delta, precision,
                 maxIterations)
-                // don't accept negative values
+        // don't accept negative values
                 .filter(d -> d >= 0);
         return p.orElse(cell.pressure());
     }
@@ -73,11 +73,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-                // gradient in given direction
-                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                        Optional.empty());
+        // gradient in given direction
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                Optional.empty());
 
-                return Vector.create(gradient);
+        return Vector.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -127,7 +127,7 @@ public class Solver {
     }
 
     private double getGradient(
-            // cell
+    // cell
             Cell cell,
             // direction
             Direction d,
@@ -165,7 +165,7 @@ public class Solver {
             return t;
         else if (is(FLUID, FLUID, UNKNOWN, t))
             return t;
-        else if (t.c2().type() == OBSTACLE)
+        else if (is(ANY, OBSTACLE, ANY, t))
             return t;
         else if (is(UNKNOWN, FLUID, FLUID, t))
             return CellTriplet.create(t.c2(), t.c3(), t.c1());
@@ -174,8 +174,17 @@ public class Solver {
         else if (is(OBSTACLE, FLUID, ANY, t))
             return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
         else
-            return unexpected("not handled " + t.c1().type() + "," + t.c2().type() + "."
-                    + t.c3().type());
+            return unexpected("not handled " + str(t.c1()) + "," + str(t.c2()) + "." + str(t.c3()));
+    }
+
+    private static String str(Cell c) {
+        final StringBuilder s = new StringBuilder();
+        s.append("Cell[");
+        s.append(c.type());
+        s.append(",");
+        s.append(c.position());
+        s.append("]");
+        return s.toString();
     }
 
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Direction d,
