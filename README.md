@@ -50,6 +50,16 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
+Derivatives
+-------------
+Numerical approximations for the derivatives (first and second) of a function f is given by
+
+Suppose the point x has two close neighbours a,b (a<x<b)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&delta;f/&delta;x = (f(b) - f(a))/(b - a)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&delta;<sup>2</sup>f/&delta;x<sup>2</sup> = (f(b) + f(a) - 2f(x))/(b-a)<sup>2</sup>
+
 Architecture
 --------------
 Aim is to provide an implementation that is 
