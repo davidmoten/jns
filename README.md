@@ -52,9 +52,11 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 Derivatives
 -------------
-Numerical approximations for the derivatives (first and second) of a function f is given by
+Numerical approximations for the derivatives (first and second) of a function f are given by:
 
-Suppose the point x has two close neighbours a,b (a<x<b)
+&nbsp;&nbsp;Suppose the point x has two close neighbours a,b (a<x<b)
+
+&nbsp;&nbsp;Then
 
 &nbsp;&nbsp;&nbsp;&nbsp;f'(x) = (f(b) - f(a))/(b - a)
 
