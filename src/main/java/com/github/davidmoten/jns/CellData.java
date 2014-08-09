@@ -1,16 +1,16 @@
 package com.github.davidmoten.jns;
 
 public interface CellData {
-	CellType type();
+    CellType type();
 
-	Vector position();
+    Vector position();
 
-	double pressure();
+    double pressure();
 
-	Vector velocity();
+    Vector velocity();
 
-	double density();
+    double density();
 
-	double viscosity();
+    double viscosity();
 
 }

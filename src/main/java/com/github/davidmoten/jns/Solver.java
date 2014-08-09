@@ -21,8 +21,10 @@ public class Solver {
     private static Logger log = LoggerFactory.getLogger(Solver.class);
 
     public VelocityPressure step(Cell cell, double timeStepSeconds) {
+        log.debug("step {}", str(cell));
         // explicit time advance scheme as per Ferziger and Peric 7.3.2
         final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
+        log.debug("velocity={}", v);
         final Function<Double, Double> f = getContinuityFunction(cell, v, timeStepSeconds);
         final double p = solveForPressure(cell, f);
         return new VelocityPressure(v, p);
@@ -193,6 +195,7 @@ public class Solver {
         if (derivativeType == DerivativeType.FIRST) {
             return (f.apply(c2) - f.apply(c1)) / (c2.position().value(d) - c1.position().value(d));
         } else if (derivativeType == DerivativeType.SECOND)
+            // only have two points so must assume 2nd derivative is zero
             return 0;
         else
             return unexpected();
@@ -200,6 +203,8 @@ public class Solver {
 
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
             Direction d, DerivativeType derivativeType) {
+        if (c1.position().value(d) == c3.position().value(d))
+            throw new RuntimeException("c1 and c3 should be different positions");
         if (derivativeType == DerivativeType.FIRST) {
             return (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d));
         } else if (derivativeType == DerivativeType.SECOND)

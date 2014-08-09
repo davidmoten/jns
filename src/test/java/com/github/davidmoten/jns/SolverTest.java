@@ -83,9 +83,11 @@ public class SolverTest {
 
     @Test
     public void testWhirlpool() {
-        final Solver solver = new Solver();
         final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
+        final Solver solver = new Solver();
         final Cell cell = mesh.cell(5, 9, 0);
+        final Vector v = solver.getVelocityAfterTime(cell, 1);
+        assertEquals(0, v.up(), VELOCITY_PRECISION);
         assertEquals(1.0, cell.velocity().east(), VELOCITY_PRECISION);
         assertEquals(0.0, cell.neighbour(Direction.NORTH, -1).velocity().east(), VELOCITY_PRECISION);
         final Mesh mesh2 = mesh.step(1).step(1);

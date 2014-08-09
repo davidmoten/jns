@@ -64,13 +64,14 @@ Numerical approximations for the derivatives (first and second) of a function f 
 
 Architecture
 --------------
-Aim is to provide an implementation that is 
+Aims:
 
 * decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease.
-* ideally the algorithm should be clearly visible in the code. Abstractions around arrays etc will be provided to reduce noise.
+* the algorithm should be clearly visible in the code
+* minimize pollution of code with data structure choices
 * accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
 * consider using lazy computation
-* minimize pollution of code with data structure choices
+
 
 Unit tests will be created for regular grid meshes.
 
@@ -83,3 +84,5 @@ Lazy computation
 What would be nice is the ability to only calculate what we need for the output. For instance in a 10x10x10 grid
 if I want to know the value of velocity at (5,5,5) after 2 time steps then clearly the whole grid does not have
 to be computed for the two time steps. 
+
+When the full grid is computed, rather than map-reduce (which might be the best bet for distributed processing) seek to enable [Rx](http://github.com/Netflix/RxJava) to improve performance. 
