@@ -48,6 +48,7 @@ public class Solver {
     }
 
     private Vector dvdt(Cell cell) {
+        log.debug("dvdt at {}", str(cell));
         final Vector velocityLaplacian = getVelocityLaplacian(cell);
         final Vector pressureGradient = getPressureGradient(cell);
         final Matrix velocityJacobian = getVelocityJacobian(cell);
