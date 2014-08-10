@@ -82,17 +82,22 @@ public class MeshCell implements Cell {
 
     @Override
     public Cell modifyPressure(double pressure) {
-        return new CellDelegator(this) {
-            @Override
-            public double pressure() {
-                return pressure;
-            }
-        };
+        return modifyPressure(this, pressure);
     }
 
     @Override
     public Cell modifyVelocity(Vector velocity) {
-        return new CellDelegator(this) {
+        return modifyVelocity(this, velocity);
+    }
+
+    @Override
+    public Cell modifyPosition(final Vector position) {
+        return modifyPosition(this, position);
+
+    }
+
+    private static Cell modifyVelocity(Cell cell, Vector velocity) {
+        return new CellDelegator(cell) {
             @Override
             public Vector velocity() {
                 return velocity;
@@ -100,14 +105,21 @@ public class MeshCell implements Cell {
         };
     }
 
-    @Override
-    public Cell modifyPosition(final Vector position) {
-        return new CellDelegator(this) {
+    private static Cell modifyPressure(Cell cell, double pressure) {
+        return new CellDelegator(cell) {
+            @Override
+            public double pressure() {
+                return pressure;
+            }
+        };
+    }
+
+    private static Cell modifyPosition(Cell cell, final Vector position) {
+        return new CellDelegator(cell) {
             @Override
             public Vector position() {
                 return position;
             }
         };
-
     }
 }

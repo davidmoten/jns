@@ -86,13 +86,24 @@ public class SolverTest {
     }
 
     @Test
-    public void testTransform() {
+    public void testTransform2D() {
         final Mesh mesh = createMesh2D();
         final Cell c2 = mesh.cell(5, 9, 0);
         final Cell c1 = c2.neighbour(Direction.UP, -1);
         final Cell c3 = c2.neighbour(Direction.UP, 1);
+        log.info("cells={}.{},{}", c1.position(), c2.position(), c3.position());
         final CellTriplet t = Solver.transform(CellTriplet.create(c1, c2, c3));
+        log.info("cells={}.{},{}", t.c1().position(), t.c2().position(), t.c3().position());
         assertFalse((t.c1().position().equals(t.c2().position())));
+    }
+
+    @Test
+    public void testObstacleToValue() {
+        final Mesh mesh = createMesh2D();
+        final Cell cell = mesh.cell(5, 9, 0);
+        final Cell obstacle = mesh.cell(5, 9, -1);
+        checkEquals(obstacle.position(), Solver.obstacleToValue(obstacle, cell).position(),
+                VELOCITY_PRECISION);
     }
 
     @Test
