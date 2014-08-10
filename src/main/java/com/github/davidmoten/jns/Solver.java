@@ -147,17 +147,21 @@ public class Solver {
 
     private double getGradient(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3, Direction d,
             DerivativeType derivativeType) {
-
         if (c2.type() == CellType.OBSTACLE) {
             return unexpected("why ask for gradient at obstacle?");
         } else {
-            final CellTriplet t = transform(c1, c2, c3);
-            if (is(FLUID, FLUID, FLUID, t)) {
-                return getGradientFromFluid(f, t.c1(), t.c2(), t.c3(), d, derivativeType);
-            } else if (is(FLUID, FLUID, UNKNOWN, t))
-                return getGradientFromFluid(f, t.c1(), t.c2(), d, derivativeType);
-            else
-                return unexpected();
+            try {
+                final CellTriplet t = transform(c1, c2, c3);
+                if (is(FLUID, FLUID, FLUID, t)) {
+                    return getGradientFromFluid(f, t.c1(), t.c2(), t.c3(), d, derivativeType);
+                } else if (is(FLUID, FLUID, UNKNOWN, t))
+                    return getGradientFromFluid(f, t.c1(), t.c2(), d, derivativeType);
+                else
+                    return unexpected();
+            } catch (final RuntimeException e) {
+                log.error("{}:{},{},{}", d, c1.position(), c2.position(), c3.position());
+                throw e;
+            }
         }
     }
 
