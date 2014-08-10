@@ -1,5 +1,7 @@
 package com.github.davidmoten.jns;
 
+import static com.github.davidmoten.jns.Util.isValid;
+
 import java.util.function.Function;
 
 public class Vector {
@@ -13,6 +15,16 @@ public class Vector {
         this.east = east;
         this.north = north;
         this.up = up;
+        validate();
+    }
+
+    private void validate() {
+        if (!isValid(east))
+            throw new RuntimeException("east is invalid: " + east);
+        if (!isValid(north))
+            throw new RuntimeException("north is invalid: " + north);
+        if (!isValid(up))
+            throw new RuntimeException("up is invalid: " + up);
     }
 
     public double value(Direction direction) {

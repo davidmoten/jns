@@ -6,6 +6,7 @@ import static com.github.davidmoten.jns.CellType.UNKNOWN;
 import static com.github.davidmoten.jns.NewtonsMethod.solve;
 import static com.github.davidmoten.jns.Util.gravityForce;
 import static com.github.davidmoten.jns.Util.unexpected;
+import static com.github.davidmoten.jns.Util.validate;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -146,6 +147,7 @@ public class Solver {
 
     private double getGradient(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3, Direction d,
             DerivativeType derivativeType) {
+
         if (c2.type() == CellType.OBSTACLE) {
             return unexpected("why ask for gradient at obstacle?");
         } else {
@@ -192,8 +194,11 @@ public class Solver {
 
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Direction d,
             DerivativeType derivativeType) {
+        log.debug("c1={}", c1.position());
+        log.debug("c2={}", c2.position());
         if (derivativeType == DerivativeType.FIRST) {
-            return (f.apply(c2) - f.apply(c1)) / (c2.position().value(d) - c1.position().value(d));
+            return validate((f.apply(c2) - f.apply(c1))
+                    / (c2.position().value(d) - c1.position().value(d)));
         } else if (derivativeType == DerivativeType.SECOND)
             // only have two points so must assume 2nd derivative is zero
             return 0;
@@ -203,13 +208,12 @@ public class Solver {
 
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
             Direction d, DerivativeType derivativeType) {
-        if (c1.position().value(d) == c3.position().value(d))
-            throw new RuntimeException("c1 and c3 should be different positions");
         if (derivativeType == DerivativeType.FIRST) {
-            return (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d));
+            return validate((f.apply(c3) - f.apply(c1))
+                    / (c3.position().value(d) - c1.position().value(d)));
         } else if (derivativeType == DerivativeType.SECOND)
-            return (f.apply(c3) + f.apply(c1) - 2 * f.apply(c2))
-                    / sqr(c3.position().value(d) - c1.position().value(d));
+            return validate((f.apply(c3) + f.apply(c1) - 2 * f.apply(c2))
+                    / sqr(c3.position().value(d) - c1.position().value(d)));
         else
             return unexpected();
     }

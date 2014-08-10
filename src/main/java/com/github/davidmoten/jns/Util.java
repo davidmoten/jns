@@ -33,7 +33,7 @@ public class Util {
         final int cellsNorth = 10;
         final Function<Indices, CellType> typeFunction = i -> {
             // Floored bottom, obstacle sides, open north side
-            if (i.up() <= 0)
+            if (i.up() < 0)
                 return CellType.OBSTACLE;
             else if (i.up() > cellsUp - 1)
                 return CellType.UNKNOWN;// air
@@ -44,7 +44,7 @@ public class Util {
                     return CellType.OBSTACLE;
             else if (i.north() <= 0)
                 return CellType.OBSTACLE;
-            else if (i.north() >= cellsNorth - 1)
+            else if (i.north() > cellsNorth - 1)
                 return CellType.UNKNOWN;
             else
                 // inside the box so is fluid
@@ -63,6 +63,17 @@ public class Util {
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
                                 .cellsUp(cellsUp).typeFunction(typeFunction)
                                 .velocityFunction(velocityFunction).build()).build();
+    }
+
+    public static boolean isValid(Double d) {
+        return d != Double.NaN && d != Double.NEGATIVE_INFINITY && d != Double.POSITIVE_INFINITY;
+    }
+
+    public static double validate(Double d) {
+        if (isValid(d))
+            return d;
+        else
+            throw new RuntimeException("invalid double value: " + d);
     }
 
 }
