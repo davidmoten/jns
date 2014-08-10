@@ -23,7 +23,7 @@ public class Util {
                 * GRAVITY_M_PER_S2;
     }
 
-    public static Vector gravityForce(Cell cell) {
+    public static Vector pressureGradientDueToGravity(Cell cell) {
         return GRAVITY.times(cell.density());
     }
 

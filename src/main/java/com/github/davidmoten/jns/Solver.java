@@ -4,7 +4,7 @@ import static com.github.davidmoten.jns.CellType.FLUID;
 import static com.github.davidmoten.jns.CellType.OBSTACLE;
 import static com.github.davidmoten.jns.CellType.UNKNOWN;
 import static com.github.davidmoten.jns.NewtonsMethod.solve;
-import static com.github.davidmoten.jns.Util.gravityForce;
+import static com.github.davidmoten.jns.Util.pressureGradientDueToGravity;
 import static com.github.davidmoten.jns.Util.unexpected;
 import static com.github.davidmoten.jns.Util.validate;
 
@@ -40,7 +40,7 @@ public class Solver {
         final int maxIterations = 15;
         final Optional<Double> p = solve(continuityFunction, cell.pressure(), delta, precision,
                 maxIterations)
-        // don't accept negative values
+                // don't accept negative values
                 .filter(d -> d >= 0);
         return p.orElse(cell.pressure());
     }
@@ -56,7 +56,7 @@ public class Solver {
         final Vector pressureGradient = getPressureGradient(cell);
         final Matrix velocityJacobian = getVelocityJacobian(cell);
         final Vector divergenceOfStress = velocityLaplacian.times(cell.viscosity())
-                .minus(pressureGradient).add(gravityForce(cell));
+                .minus(pressureGradient).add(pressureGradientDueToGravity(cell));
         final Vector result = divergenceOfStress.divideBy(cell.density()).minus(
                 velocityJacobian.times(cell.velocity()));
         return result;
@@ -77,11 +77,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-        // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                Optional.empty());
+                // gradient in given direction
+                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                        Optional.empty());
 
-        return Vector.create(gradient);
+                return Vector.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -132,7 +132,7 @@ public class Solver {
     }
 
     private double getGradient(
-    // cell
+            // cell
             Cell cell,
             // direction
             Direction d,
@@ -170,7 +170,8 @@ public class Solver {
         return transform(CellTriplet.create(c1, c2, c3));
     }
 
-    private static CellTriplet transform(CellTriplet t) {
+    // visible for testing
+    static CellTriplet transform(CellTriplet t) {
         if (is(FLUID, FLUID, FLUID, t))
             return t;
         else if (is(FLUID, FLUID, UNKNOWN, t))
@@ -251,6 +252,6 @@ public class Solver {
                 // obstacle
                 .modifyPressure(
                         (wrt.pressure() + obstacle.position().minus(wrt.position())
-                                .dotProduct(Util.gravityForce(wrt))));
+                                .dotProduct(Util.pressureGradientDueToGravity(wrt))));
     }
 }
