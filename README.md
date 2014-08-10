@@ -68,7 +68,7 @@ Aims:
 
 * decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease.
 * the algorithm should be clearly visible in the code
-* minimize pollution of code with data structure choices
+* minimize pollution of code with data structure choices (array iterations for example)
 * accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
 * consider using lazy computation
 
