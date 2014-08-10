@@ -7,7 +7,7 @@ class TestingUtil {
         return Mesh.builder().cellSize(1).creator(new CellCreator(10, 10, 10)).build();
     }
 
-    static Mesh createGrid2D() {
+    static Mesh createMesh2D() {
         return Mesh.builder().cellSize(1).creator(new CellCreator(10, 10, 1)).build();
     }
 
