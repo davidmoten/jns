@@ -1,5 +1,6 @@
 package com.github.davidmoten.jns;
 
+import static com.github.davidmoten.jns.CellType.FLUID;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -24,7 +25,8 @@ public class MeshGui extends Application {
                 .cellSize(1)
                 .creator(
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
-                                .cellsUp(cellsUp).build()).build();
+                        .cellsUp(cellsUp).build()).build();
+        mesh = Util.createMeshForWhirlpool2D();
     }
 
     @Override
@@ -41,7 +43,7 @@ public class MeshGui extends Application {
         primaryStage.show();
     }
 
-    private void drawGrid(GraphicsContext gc, Mesh grid) {
+    private void drawGrid(GraphicsContext gc, Mesh mesh) {
 
         final Statistics pStats = new Statistics();
         final Statistics vStats = new Statistics();
@@ -49,16 +51,18 @@ public class MeshGui extends Application {
         // get stats
         for (int east = 0; east <= cellsEast; east++)
             for (int north = 0; north <= cellsNorth; north++) {
-                final Cell cell = grid.cell(east, north, cellsUp);
-                final double p = cell.pressure();
-                final double v = magnitudeEastNorth(cell.velocity());
-                pStats.add(p);
-                vStats.add(v);
+                final Cell cell = mesh.cell(east, north, cellsUp - 1);
+                if (cell.type() == CellType.FLUID) {
+                    final double p = cell.pressure();
+                    final double v = magnitudeEastNorth(cell.velocity());
+                    pStats.add(p);
+                    vStats.add(v);
+                }
             }
 
-        for (int east = 0; east <= cellsEast; east++)
-            for (int north = 0; north <= cellsNorth; north++) {
-                drawCell(gc, grid, east, north, cellsUp, pStats, vStats);
+        for (int east = 0; east < cellsEast; east++)
+            for (int north = 0; north < cellsNorth; north++) {
+                drawCell(gc, mesh, east, north, cellsUp - 1, pStats, vStats);
             }
     }
 
@@ -75,25 +79,35 @@ public class MeshGui extends Application {
         final double x1 = cellWidth * east;
         final double cellHeight = h / cellsNorth;
         final double y1 = h - cellHeight * (north + 1);
-        final double pressure0To1 = (cell.pressure() - pStats.min())
-                / (pStats.max() - pStats.min());
 
-        gc.setFill(toColor(MIN_SATURATION, pressure0To1));
-        gc.fillRect(x1, y1, cellWidth, cellHeight);
-        gc.setStroke(Color.DARKGRAY);
+        if (cell.type() == CellType.OBSTACLE) {
+            gc.setFill(Color.BROWN);
+            gc.fillRect(x1, y1, cellWidth, cellHeight);
+        } else if (cell.type() == CellType.UNKNOWN) {
+            gc.setFill(Color.LIGHTPINK);
+            gc.fillRect(x1, y1, cellWidth, cellHeight);
+        } else {
+            final double pressure0To1 = (cell.pressure() - pStats.min())
+                    / (pStats.max() - pStats.min());
+            gc.setFill(toColor(MIN_SATURATION, pressure0To1));
+            gc.fillRect(x1, y1, cellWidth, cellHeight);
+        }
+        gc.setStroke(Color.WHITE);
         gc.strokeRect(x1, y1, cellWidth, cellHeight);
 
-        final Vector v = cell.velocity();
-        if (vStats.max() > 0) {
-            final double magnitudeEastNorth = magnitudeEastNorth(v);
-            final double vProportion = magnitudeEastNorth / vStats.max();
-            final double centreX = x1 + cellWidth / 2;
-            final double centreY = y1 + cellHeight / 2;
-            final double deltaX = v.east() / magnitudeEastNorth * vProportion * cellWidth / 2;
-            final double deltaY = v.north() / magnitudeEastNorth * vProportion * cellHeight / 2;
+        if (cell.type() == FLUID) {
+            final Vector v = cell.velocity();
+            if (vStats.max() > 0) {
+                final double magnitudeEastNorth = magnitudeEastNorth(v);
+                final double vProportion = magnitudeEastNorth / vStats.max();
+                final double centreX = x1 + cellWidth / 2;
+                final double centreY = y1 + cellHeight / 2;
+                final double deltaX = v.east() / magnitudeEastNorth * vProportion * cellWidth / 2;
+                final double deltaY = v.north() / magnitudeEastNorth * vProportion * cellHeight / 2;
 
-            gc.setStroke(Color.DARKBLUE);
-            gc.strokeLine(centreX, centreY, centreX + deltaX, centreY + deltaY);
+                gc.setStroke(Color.DARKBLUE);
+                gc.strokeLine(centreX, centreY, centreX + deltaX, centreY + deltaY);
+            }
         }
 
     }

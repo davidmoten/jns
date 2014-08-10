@@ -86,6 +86,9 @@ public class SolverTest {
         final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
         final Solver solver = new Solver();
         final Cell cell = mesh.cell(5, 9, 0);
+        assertEquals(CellType.FLUID, mesh.cell(5, 9, 0).type());
+        checkEquals(Vector.create(1, 0, 0), cell.velocity(), VELOCITY_PRECISION);
+        assertEquals(CellType.UNKNOWN, mesh.cell(5, 9, 1).type());
         final Vector v = solver.getVelocityAfterTime(cell, 1);
         assertEquals(0, v.up(), VELOCITY_PRECISION);
         assertEquals(1.0, cell.velocity().east(), VELOCITY_PRECISION);
