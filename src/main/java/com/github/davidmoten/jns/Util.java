@@ -28,8 +28,9 @@ public class Util {
         return GRAVITY.times(cell.density());
     }
 
-    public static Cell override(Cell cell, Vector velocity, double pressure) {
-        return new CellDelegator(cell, Optional.of(velocity), Optional.of(pressure));
+    public static Cell override(Cell cell, CellType type, Vector velocity, double pressure) {
+        return new CellDelegator(cell, Optional.of(type), Optional.of(velocity),
+                Optional.of(pressure));
     }
 
     static Mesh createMeshForWhirlpool2D() {

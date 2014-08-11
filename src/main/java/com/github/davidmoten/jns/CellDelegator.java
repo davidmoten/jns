@@ -7,16 +7,22 @@ public class CellDelegator implements Cell {
     private final Cell cell;
     private final Optional<Vector> velocity;
     private final Optional<Double> pressure;
+    private final Optional<CellType> type;
 
-    public CellDelegator(Cell cell, Optional<Vector> velocity, Optional<Double> pressure) {
+    public CellDelegator(Cell cell, Optional<CellType> type, Optional<Vector> velocity,
+            Optional<Double> pressure) {
         this.cell = cell;
+        this.type = type;
         this.velocity = velocity;
         this.pressure = pressure;
     }
 
     @Override
     public CellType type() {
-        return cell.type();
+        if (type.isPresent())
+            return type.get();
+        else
+            return cell.type();
     }
 
     @Override

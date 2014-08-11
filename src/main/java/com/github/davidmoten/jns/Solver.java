@@ -106,7 +106,8 @@ public class Solver {
 
     private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getContinuityFunction(cell, Util.override(cell, newVelocity, pressure));
+        return pressure -> getContinuityFunction(cell,
+                Util.override(cell, cell.type(), newVelocity, pressure));
     }
 
     private double getContinuityFunction(Cell cell, Cell override) {
@@ -248,6 +249,6 @@ public class Solver {
         final double p = wrt.pressure()
                 + obstacle.position().minus(wrt.position())
                 .dotProduct(Util.pressureGradientDueToGravity(wrt));
-        return Util.override(obstacle, Vector.ZERO, p);
+        return Util.override(obstacle, CellType.FLUID, Vector.ZERO, p);
     }
 }
