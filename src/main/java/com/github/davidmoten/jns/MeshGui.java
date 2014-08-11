@@ -31,7 +31,7 @@ public class MeshGui extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Drawing Operations Test");
+        primaryStage.setTitle("Surface level mesh");
         final Group root = new Group();
         final Canvas canvas = new Canvas(600, 600);
         final GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -60,9 +60,10 @@ public class MeshGui extends Application {
                 }
             }
 
-        for (int east = 0; east < cellsEast; east++)
-            for (int north = 0; north < cellsNorth; north++) {
-                drawCell(gc, mesh, east, north, cellsUp - 1, pStats, vStats);
+        for (int east = -1; east <= cellsEast; east++)
+            for (int north = -1; north <= cellsNorth; north++) {
+                drawCell(gc, mesh, east, north, cellsUp - 1, pStats, vStats, cellsEast + 2,
+                        cellsNorth + 2, cellsUp);
             }
     }
 
@@ -71,14 +72,14 @@ public class MeshGui extends Application {
     }
 
     private void drawCell(GraphicsContext gc, Mesh grid, int east, int north, int up,
-            Statistics pStats, Statistics vStats) {
+            Statistics pStats, Statistics vStats, int cellsEast, int cellsNorth, int cellsUp) {
         final double w = gc.getCanvas().getWidth();
         final double h = gc.getCanvas().getHeight();
         final Cell cell = grid.cell(east, north, up);
-        final double cellWidth = w / cellsEast;
-        final double x1 = cellWidth * east;
+        final double cellWidth = w / (cellsEast);
+        final double x1 = cellWidth * (east + 1);
         final double cellHeight = h / cellsNorth;
-        final double y1 = h - cellHeight * (north + 1);
+        final double y1 = h - cellHeight * (north + 2);
 
         if (cell.type() == CellType.OBSTACLE) {
             gc.setFill(Color.BROWN);

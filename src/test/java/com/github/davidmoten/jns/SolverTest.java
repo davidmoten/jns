@@ -121,6 +121,7 @@ public class SolverTest {
         assertEquals(CellType.UNKNOWN, mesh.cell(5, 9, 1).type());
         assertEquals(CellType.OBSTACLE, cell.neighbour(Direction.UP, -1).type());
         final Vector v = solver.getVelocityAfterTime(cell, 1);
+        log.info("vector={}", v);
         assertEquals(0, v.up(), VELOCITY_PRECISION);
         assertEquals(1.0, cell.velocity().east(), VELOCITY_PRECISION);
         assertEquals(0.0, cell.neighbour(Direction.NORTH, -1).velocity().east(), VELOCITY_PRECISION);
