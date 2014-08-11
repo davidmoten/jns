@@ -175,7 +175,7 @@ public class Solver {
         if (is(FLUID, FLUID, FLUID, t))
             return t;
         else if (is(FLUID, FLUID, UNKNOWN, t))
-            return t;
+            return transform(t.c1(), t.c2(), unknownToValue(t.c3(), t.c2()));
         else if (is(ANY, OBSTACLE, ANY, t))
             return t;
         else if (is(UNKNOWN, FLUID, FLUID, t))
@@ -186,6 +186,11 @@ public class Solver {
             return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
         else
             return unexpected("not handled " + str(t.c1()) + "," + str(t.c2()) + "." + str(t.c3()));
+    }
+
+    private static Cell unknownToValue(Cell unknown, Cell wrt) {
+        final double p = getEquilibriumPressureRelativeTo(unknown, wrt);
+        return Util.override(unknown, CellType.FLUID, wrt.velocity(), p);
     }
 
     private static String str(Cell c) {
@@ -246,9 +251,14 @@ public class Solver {
      */
     // @VisibleForTesting
     static Cell obstacleToValue(Cell obstacle, Cell wrt) {
+        final double p = getEquilibriumPressureRelativeTo(obstacle, wrt);
+        return Util.override(obstacle, CellType.FLUID, Vector.ZERO, p);
+    }
+
+    private static double getEquilibriumPressureRelativeTo(Cell obstacle, Cell wrt) {
         final double p = wrt.pressure()
                 + obstacle.position().minus(wrt.position())
                 .dotProduct(Util.pressureGradientDueToGravity(wrt));
-        return Util.override(obstacle, CellType.FLUID, Vector.ZERO, p);
+        return p;
     }
 }
