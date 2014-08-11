@@ -40,7 +40,7 @@ public class Solver {
         final int maxIterations = 15;
         final Optional<Double> p = solve(continuityFunction, cell.pressure(), delta, precision,
                 maxIterations)
-        // don't accept negative values
+                // don't accept negative values
                 .filter(d -> d >= 0);
         return p.orElse(cell.pressure());
     }
@@ -77,11 +77,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-        // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                Optional.empty());
+                // gradient in given direction
+                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                        Optional.empty());
 
-        return Vector.create(gradient);
+                return Vector.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -106,8 +106,7 @@ public class Solver {
 
     private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getContinuityFunction(cell, cell.modifyVelocity(newVelocity)
-                .modifyPressure(pressure));
+        return pressure -> getContinuityFunction(cell, Util.override(cell, newVelocity, pressure));
     }
 
     private double getContinuityFunction(Cell cell, Cell override) {
@@ -132,7 +131,7 @@ public class Solver {
     }
 
     private double getGradient(
-    // cell
+            // cell
             Cell cell,
             // direction
             Direction d,
@@ -246,13 +245,9 @@ public class Solver {
      */
     // @VisibleForTesting
     static Cell obstacleToValue(Cell obstacle, Cell wrt) {
-        return wrt
-                .modifyVelocity(Vector.ZERO)
-                .modifyPosition(obstacle.position())
-                // want the pressure derivative to be zero across fluid and
-                // obstacle
-                .modifyPressure(
-                        (wrt.pressure() + obstacle.position().minus(wrt.position())
-                                .dotProduct(Util.pressureGradientDueToGravity(wrt))));
+        final double p = wrt.pressure()
+                + obstacle.position().minus(wrt.position())
+                .dotProduct(Util.pressureGradientDueToGravity(wrt));
+        return Util.override(obstacle, Vector.ZERO, p);
     }
 }

@@ -92,24 +92,6 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public Cell modifyPressure(double pressure) {
-        return new CellImpl(type, position, pressure, velocity, density, viscosity, west, east,
-                south, north, down, up);
-    }
-
-    @Override
-    public Cell modifyVelocity(Vector velocity) {
-        return new CellImpl(type, position, pressure, velocity, density, viscosity, west, east,
-                south, north, down, up);
-    }
-
-    @Override
-    public Cell modifyPosition(Vector position) {
-        return new CellImpl(type, position, pressure, velocity, density, viscosity, west, east,
-                south, north, down, up);
-    }
-
-    @Override
     public CellType type() {
         return type;
     }

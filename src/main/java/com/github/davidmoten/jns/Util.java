@@ -1,5 +1,6 @@
 package com.github.davidmoten.jns;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class Util {
@@ -25,6 +26,10 @@ public class Util {
 
     public static Vector pressureGradientDueToGravity(Cell cell) {
         return GRAVITY.times(cell.density());
+    }
+
+    public static Cell override(Cell cell, Vector velocity, double pressure) {
+        return new CellDelegator(cell, Optional.of(velocity), Optional.of(pressure));
     }
 
     static Mesh createMeshForWhirlpool2D() {

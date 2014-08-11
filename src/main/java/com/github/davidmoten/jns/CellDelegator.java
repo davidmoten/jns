@@ -1,11 +1,17 @@
 package com.github.davidmoten.jns;
 
+import java.util.Optional;
+
 public class CellDelegator implements Cell {
 
     private final Cell cell;
+    private final Optional<Vector> velocity;
+    private final Optional<Double> pressure;
 
-    public CellDelegator(Cell cell) {
+    public CellDelegator(Cell cell, Optional<Vector> velocity, Optional<Double> pressure) {
         this.cell = cell;
+        this.velocity = velocity;
+        this.pressure = pressure;
     }
 
     @Override
@@ -20,12 +26,18 @@ public class CellDelegator implements Cell {
 
     @Override
     public double pressure() {
-        return cell.pressure();
+        if (pressure.isPresent())
+            return pressure.get();
+        else
+            return cell.pressure();
     }
 
     @Override
     public Vector velocity() {
-        return cell.velocity();
+        if (velocity.isPresent())
+            return velocity.get();
+        else
+            return cell.velocity();
     }
 
     @Override
@@ -41,21 +53,6 @@ public class CellDelegator implements Cell {
     @Override
     public Cell neighbour(Direction direction, int count) {
         return cell.neighbour(direction, count);
-    }
-
-    @Override
-    public Cell modifyPressure(double pressure) {
-        return cell.modifyPressure(pressure);
-    }
-
-    @Override
-    public Cell modifyVelocity(Vector v1) {
-        return cell.modifyVelocity(v1);
-    }
-
-    @Override
-    public Cell modifyPosition(Vector position) {
-        return cell.modifyPosition(position);
     }
 
 }
