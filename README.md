@@ -58,7 +58,7 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 For a vector **v**, 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>**v** = (v<sub>x</sub>,v<sub>y</sub>,v<sub>z</sub>)
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>**v** = (&nabla;<sup>2</sup>v<sub>x</sub>,&nabla;<sup>2</sup>v<sub>y</sub>,&nabla;<sup>2</sup>v<sub>z</sub>)
 
 
 Derivatives
