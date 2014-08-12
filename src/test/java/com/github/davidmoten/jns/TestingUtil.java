@@ -1,6 +1,5 @@
 package com.github.davidmoten.jns;
 
-
 class TestingUtil {
 
     static Mesh createMesh() {

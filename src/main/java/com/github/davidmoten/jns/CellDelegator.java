@@ -61,4 +61,9 @@ public class CellDelegator implements Cell {
         return cell.neighbour(direction, count);
     }
 
+    @Override
+    public boolean isBoundary() {
+        return cell.isBoundary();
+    }
+
 }

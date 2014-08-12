@@ -62,13 +62,17 @@ public class Util {
             else
                 return Vector.ZERO;
         };
+        final Function<Indices, Boolean> isBoundary = i -> {
+            return i.north() == cellsNorth - 1;
+        };
         return Mesh
                 .builder()
                 .cellSize(1)
                 .creator(
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
                                 .cellsUp(cellsUp).typeFunction(typeFunction)
-                                .velocityFunction(velocityFunction).build()).build();
+                                .velocityFunction(velocityFunction).isBoundaryFunction(isBoundary)
+                                .build()).build();
     }
 
     public static boolean isValid(Double d) {

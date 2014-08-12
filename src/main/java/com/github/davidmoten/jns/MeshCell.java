@@ -19,6 +19,7 @@ public class MeshCell implements Cell {
     private final Optional<Double> pressure;
     private final double density;
     private final double viscosity;
+    private final boolean isBoundary;
 
     MeshCell(Mesh mesh, int indexEast, int indexNorth, int indexUp, CellData cellData) {
         this.mesh = mesh;
@@ -36,6 +37,7 @@ public class MeshCell implements Cell {
             this.velocity = Optional.empty();
             this.pressure = Optional.empty();
         }
+        this.isBoundary = cellData.isBoundary();
     }
 
     @Override
@@ -78,6 +80,11 @@ public class MeshCell implements Cell {
             return mesh.cell(indexEast, indexNorth, indexUp + count);
         else
             return Util.unexpected();
+    }
+
+    @Override
+    public boolean isBoundary() {
+        return isBoundary;
     }
 
 }

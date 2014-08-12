@@ -250,4 +250,9 @@ public class CellImpl implements Cell {
         }
 
     }
+
+    @Override
+    public boolean isBoundary() {
+        return false;
+    }
 }

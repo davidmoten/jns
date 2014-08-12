@@ -13,4 +13,6 @@ public interface CellData {
 
     double viscosity();
 
+    boolean isBoundary();
+
 }

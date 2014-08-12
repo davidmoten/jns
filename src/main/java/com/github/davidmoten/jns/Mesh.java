@@ -97,10 +97,17 @@ public class Mesh {
         return cellSizeUp;
     }
 
+    public Mesh stepMultiple(double timeStepSeconds, long numberOfSteps) {
+        Mesh m = this;
+        for (int i = 0; i < numberOfSteps; i++)
+            m = m.step(timeStepSeconds);
+        return m;
+    }
+
     public Mesh step(double timeStepSeconds) {
         final Mesh m = this;
-        final Solver solver = new Solver();
         return new Mesh(i -> new CellData() {
+            final Solver solver = new Solver();
             final AtomicReference<VelocityPressure> vp = new AtomicReference<VelocityPressure>();
 
             @Override
@@ -142,6 +149,12 @@ public class Mesh {
                 }
                 return vp.get();
             }
+
+            @Override
+            public boolean isBoundary() {
+                return m.cell(i).isBoundary();
+            }
+
         }, cellSizeEast, cellSizeNorth, cellSizeUp);
     }
 }

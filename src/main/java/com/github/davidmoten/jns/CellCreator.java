@@ -14,12 +14,14 @@ public class CellCreator implements Function<Indices, CellData> {
     private final Function<Indices, Vector> velocityFunction;
     private final Function<Indices, CellType> typeFunction;
     private final Function<Indices, Double> pressureFunction;
+    private final Function<Indices, Boolean> isBoundaryFunction;
 
     public CellCreator(int eastSize, int northSize, int upSize, double density, double viscosity,
             Optional<Function<Indices, Vector>> positionFunction,
             Optional<Function<Indices, Vector>> velocityFunction,
             Optional<Function<Indices, CellType>> typeFunction,
-            Optional<Function<Indices, Double>> pressureFunction) {
+            Optional<Function<Indices, Double>> pressureFunction,
+            Optional<Function<Indices, Boolean>> isBoundaryFunction) {
         this.eastSize = eastSize;
         this.northSize = northSize;
         this.upSize = upSize;
@@ -29,17 +31,20 @@ public class CellCreator implements Function<Indices, CellData> {
         this.velocityFunction = velocityFunction.orElse(velocityFunctionDefault);
         this.typeFunction = typeFunction.orElse(defaultTypeFunction);
         this.pressureFunction = pressureFunction.orElse(pressureFunctionDefault);
+        this.isBoundaryFunction = isBoundaryFunction.orElse(isBoundaryFunctionDefault);
     }
 
     public CellCreator(int eastSize, int northSize, int upSize) {
         this(eastSize, northSize, upSize, Util.SEAWATER_MEAN_DENSITY_KG_PER_M3,
                 Util.SEAWATER_MEAN_VISCOSITY, Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.empty());
+                Optional.empty(), Optional.empty());
     }
 
     private final Function<Indices, Vector> positionFunctionDefault = i -> {
         return Vector.create(i.east(), i.north(), i.up() - upSize + 1);
     };
+
+    private final Function<Indices, Boolean> isBoundaryFunctionDefault = i -> false;
 
     private static final Function<Indices, Vector> velocityFunctionDefault = i -> Vector.ZERO;
 
@@ -96,6 +101,11 @@ public class CellCreator implements Function<Indices, CellData> {
             public double viscosity() {
                 return viscosity;
             }
+
+            @Override
+            public boolean isBoundary() {
+                return isBoundaryFunction.apply(i);
+            }
         };
     }
 
@@ -114,6 +124,7 @@ public class CellCreator implements Function<Indices, CellData> {
         private Optional<Function<Indices, Vector>> velocityFunction = Optional.empty();
         private Optional<Function<Indices, CellType>> typeFunction = Optional.empty();
         private Optional<Function<Indices, Double>> pressureFunction = Optional.empty();
+        private Optional<Function<Indices, Boolean>> isBoundaryFunction = Optional.empty();
 
         private Builder() {
         }
@@ -163,9 +174,15 @@ public class CellCreator implements Function<Indices, CellData> {
             return this;
         }
 
+        public Builder isBoundaryFunction(Function<Indices, Boolean> isBoundaryFunction) {
+            this.isBoundaryFunction = Optional.of(isBoundaryFunction);
+            return this;
+        }
+
         public CellCreator build() {
             return new CellCreator(eastSize, northSize, upSize, density, viscosity,
-                    positionFunction, velocityFunction, typeFunction, pressureFunction);
+                    positionFunction, velocityFunction, typeFunction, pressureFunction,
+                    isBoundaryFunction);
         }
     }
 

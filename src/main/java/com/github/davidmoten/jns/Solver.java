@@ -22,6 +22,8 @@ public class Solver {
     private static Logger log = LoggerFactory.getLogger(Solver.class);
 
     public VelocityPressure step(Cell cell, double timeStepSeconds) {
+        if (cell.isBoundary())
+            return new VelocityPressure(cell.velocity(), cell.pressure());
         log.debug("step {}", str(cell));
         // explicit time advance scheme as per Ferziger and Peric 7.3.2
         final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
@@ -40,7 +42,7 @@ public class Solver {
         final int maxIterations = 15;
         final Optional<Double> p = solve(continuityFunction, cell.pressure(), delta, precision,
                 maxIterations)
-                // don't accept negative values
+        // don't accept negative values
                 .filter(d -> d >= 0);
         return p.orElse(cell.pressure());
     }
@@ -77,11 +79,11 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-                // gradient in given direction
-                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                        Optional.empty());
+        // gradient in given direction
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
+                Optional.empty());
 
-                return Vector.create(gradient);
+        return Vector.create(gradient);
     }
 
     private Vector getPressureGradient(Cell cell) {
@@ -132,7 +134,7 @@ public class Solver {
     }
 
     private double getGradient(
-            // cell
+    // cell
             Cell cell,
             // direction
             Direction d,
@@ -175,7 +177,7 @@ public class Solver {
         if (is(FLUID, FLUID, FLUID, t))
             return t;
         else if (is(FLUID, FLUID, UNKNOWN, t))
-            return transform(t.c1(), t.c2(), unknownToValue(t.c3(), t.c2()));
+            return t;
         else if (is(ANY, OBSTACLE, ANY, t))
             return t;
         else if (is(UNKNOWN, FLUID, FLUID, t))
@@ -186,11 +188,6 @@ public class Solver {
             return transform(obstacleToValue(t.c1(), t.c2()), t.c2(), t.c3());
         else
             return unexpected("not handled " + str(t.c1()) + "," + str(t.c2()) + "." + str(t.c3()));
-    }
-
-    private static Cell unknownToValue(Cell unknown, Cell wrt) {
-        final double p = getEquilibriumPressureRelativeTo(unknown, wrt);
-        return Util.override(unknown, CellType.FLUID, wrt.velocity(), p);
     }
 
     private static String str(Cell c) {
@@ -255,10 +252,15 @@ public class Solver {
         return Util.override(obstacle, CellType.FLUID, Vector.ZERO, p);
     }
 
+    private static Cell unknownToValue(Cell unknown, Cell wrt) {
+        final double p = getEquilibriumPressureRelativeTo(unknown, wrt);
+        return Util.override(unknown, CellType.FLUID, wrt.velocity(), p);
+    }
+
     private static double getEquilibriumPressureRelativeTo(Cell obstacle, Cell wrt) {
         final double p = wrt.pressure()
                 + obstacle.position().minus(wrt.position())
-                .dotProduct(Util.pressureGradientDueToGravity(wrt));
+                        .dotProduct(Util.pressureGradientDueToGravity(wrt));
         return p;
     }
 }

@@ -6,6 +6,7 @@ import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -112,24 +113,29 @@ public class SolverTest {
     }
 
     @Test
-    public void testWhirlpool() {
+    public void testCellAtBoundaryOfWhirpoolMeshReturnsConstantVelocity() {
         final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
         final Solver solver = new Solver();
+        // cell is on open boundary so should not be predicted using Navier
+        // Stokes, rather it is a boundary condition that is updated at some
+        // interval (or perhaps interpolated)
         final Cell cell = mesh.cell(5, 9, 0);
         assertEquals(CellType.FLUID, mesh.cell(5, 9, 0).type());
         checkEquals(Vector.create(1, 0, 0), cell.velocity(), VELOCITY_PRECISION);
         assertEquals(CellType.UNKNOWN, mesh.cell(5, 9, 1).type());
         assertEquals(CellType.OBSTACLE, cell.neighbour(Direction.UP, -1).type());
-        final Vector v = solver.getVelocityAfterTime(cell, 1);
-        log.info("vector={}", v);
-        assertEquals(0, v.up(), VELOCITY_PRECISION);
-        assertEquals(1.0, cell.velocity().east(), VELOCITY_PRECISION);
-        assertEquals(0.0, cell.neighbour(Direction.NORTH, -1).velocity().east(), VELOCITY_PRECISION);
-        final Mesh mesh2 = mesh.step(1).step(1);
-        final Cell cell2 = mesh2.cell(5, 9, 0);
-        assertEquals(1.0, cell2.velocity().east(), VELOCITY_PRECISION);
-        assertEquals(0.0, cell2.neighbour(Direction.NORTH, -1).velocity().east(),
+        checkEquals(Vector.create(1, 0, 0), solver.getVelocityAfterTime(cell, 1),
                 VELOCITY_PRECISION);
+    }
+
+    @Test
+    public void testWhirlpool() {
+        final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
+        Mesh mesh2 = mesh.stepMultiple(1, 5);
+        Cell cell = mesh2.cell(5, 8, 0);
+        Vector v = cell.velocity();
+        log.info("vector={}", v);
+        assertTrue(v.north() != 0);
     }
 
     private Mesh checkNoChange(int eastIndex, int northIndex, int upIndex) {
