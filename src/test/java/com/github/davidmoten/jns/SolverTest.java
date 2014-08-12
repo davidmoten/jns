@@ -2,7 +2,7 @@ package com.github.davidmoten.jns;
 
 import static com.github.davidmoten.jns.TestingUtil.createMesh;
 import static com.github.davidmoten.jns.TestingUtil.createMesh2D;
-import static com.github.davidmoten.jns.TestingUtil.createMeshForWhirlpool2D;
+import static com.github.davidmoten.jns.TestingUtil.createMeshForWhirlpool2DTenByTen;
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -116,7 +116,7 @@ public class SolverTest {
 
     @Test
     public void testCellAtBoundaryOfWhirpoolMeshReturnsConstantVelocity() {
-        final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
+        final Mesh mesh = TestingUtil.createMeshForWhirlpool2DTenByTen();
         final Solver solver = new Solver();
         // cell is on open boundary so should not be predicted using Navier
         // Stokes, rather it is a boundary condition that is updated at some
@@ -132,7 +132,7 @@ public class SolverTest {
 
     @Test
     public void testWhirlpool() {
-        Mesh m = createMeshForWhirlpool2D();
+        Mesh m = createMeshForWhirlpool2DTenByTen();
         double initialPressure = m.cell(5, 8, 0).pressure();
         final Mesh mesh = m.stepMultiple(1, 20);
         Cell cell = mesh.cell(5, 8, 0);

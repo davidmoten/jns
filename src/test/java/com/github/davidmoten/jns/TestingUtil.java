@@ -10,7 +10,7 @@ class TestingUtil {
         return Mesh.builder().cellSize(1).creator(new CellCreator(10, 10, 1)).build();
     }
 
-    static Mesh createMeshForWhirlpool2D() {
-        return Util.createMeshForWhirlpool2D();
+    static Mesh createMeshForWhirlpool2DTenByTen() {
+        return Util.createMeshForWhirlpool2D(10, 10);
     }
 }

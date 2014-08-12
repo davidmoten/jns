@@ -26,7 +26,7 @@ public class MeshGui extends Application {
                 .creator(
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
                                 .cellsUp(cellsUp).build()).build();
-        mesh = Util.createMeshForWhirlpool2D().stepMultiple(0.1, 200);
+        mesh = Util.createMeshForWhirlpool2D(cellsEast, cellsNorth).stepMultiple(0.1, 20);
     }
 
     @Override

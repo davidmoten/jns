@@ -33,10 +33,8 @@ public class Util {
                 Optional.of(pressure));
     }
 
-    static Mesh createMeshForWhirlpool2D() {
-        final int cellsUp = 1;
-        final int cellsEast = 10;
-        final int cellsNorth = 10;
+    static Mesh createMeshForWhirlpool2D(int cellsEast, int cellsNorth) {
+        int cellsUp = 1;
         final Function<Indices, CellType> typeFunction = i -> {
             // Floored bottom, obstacle sides, open north side
             if (i.up() < 0)
