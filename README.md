@@ -56,7 +56,9 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>f = &delta;<sup>2</sup>f/&delta;x<sup>2</sup> + &delta;<sup>2</sup>f/&delta;y<sup>2</sup> + &delta;<sup>2</sup>f/&delta;z<sup>2</sup> 
 
-For a vector **v**, &nabla;<sup>2</sup>**v** = (v<sub>x</sub>,v<sub>y</sub>,v<sub>z</sub>)
+For a vector **v**, 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>**v** = (v<sub>x</sub>,v<sub>y</sub>,v<sub>z</sub>)
 
 
 Derivatives
