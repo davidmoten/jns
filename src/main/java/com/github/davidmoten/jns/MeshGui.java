@@ -26,7 +26,7 @@ public class MeshGui extends Application {
                 .creator(
                         CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
                                 .cellsUp(cellsUp).build()).build();
-        mesh = Util.createMeshForWhirlpool2D().stepMultiple(0.1, 100);
+        mesh = Util.createMeshForWhirlpool2D().stepMultiple(0.1, 200);
     }
 
     @Override
@@ -115,6 +115,10 @@ public class MeshGui extends Application {
 
     private static Color toColor(double minSaturation, double prop) {
         return Color.hsb(0.0, (prop * (1 - minSaturation) + minSaturation), 1.0);
+    }
+
+    public static void launch() {
+        launch(new String[] {});
     }
 
     public static void main(String[] args) {
