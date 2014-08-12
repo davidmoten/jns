@@ -21,11 +21,15 @@ In terms of reference material I've found very detailed mathematical discussions
 
 Navier-Stokes Equations
 -------------------------
-The momentum equation is:
+The conservation of momentum equation is:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
 
-where 
+The governing equation for pressure computation (derived via conservation of mass) is:
+
+    ∇2p = -∇ ⋅ (v ⋅ ∇)v
+
+where
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho; = fluid density
 
