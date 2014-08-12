@@ -52,6 +52,11 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
+&nabla;<sup>2</sup> is the [Laplacian operator](http://en.wikipedia.org/wiki/Laplace_operator) and is defined by:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>f = &delta;<sup>2</sup>f/&delta;x<sup>2</sup> + &delta;<sup>2</sup>f/&delta;y<sup>2</sup> + &delta;<sup>2</sup>f/&delta;z<sup>2</sup> 
+
+
 Derivatives
 -------------
 Numerical approximations for the derivatives (first and second) of a function f are given by:
