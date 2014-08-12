@@ -68,10 +68,9 @@ For a vector **v**,
 
 So **v** &sdot; &nabla; =
 
-| ----------------------- | ----------------------- | ----------------------- |
-| &delta;v<sub>x</sub>/&delta;x | &delta;v<sub>x</sub>/&delta;y | &delta;v<sub>x</sub>/&delta;z |    
-| &delta;v<sub>y</sub>/&delta;x | &delta;v<sub>y</sub>/&delta;y | &delta;v<sub>y</sub>/&delta;z |
-| &delta;v<sub>z</sub>/&delta;x | &delta;v<sub>z</sub>/&delta;y | &delta;v<sub>z</sub>/&delta;z |
+&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;z     
+&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;z 
+&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;z 
 
 
 Derivatives
