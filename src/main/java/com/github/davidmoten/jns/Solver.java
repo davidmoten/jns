@@ -82,8 +82,7 @@ public class Solver {
         };
         final Function<Direction, Double> gradient =
         // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND,
-                Optional.empty());
+        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND);
 
         return Vector.create(gradient);
     }
@@ -94,8 +93,7 @@ public class Solver {
 
     // Visible for testing
     double getPressureGradient(Cell cell, Direction direction) {
-        return getGradient(cell, direction, c -> c.pressure(), DerivativeType.FIRST,
-                Optional.empty());
+        return getGradient(cell, direction, c -> c.pressure(), DerivativeType.FIRST);
     }
 
     private Matrix getVelocityJacobian(Cell cell) {
@@ -104,20 +102,20 @@ public class Solver {
 
     private Vector getVelocityGradient(Cell cell, Direction direction) {
         final Function<Direction, Double> gradient = d -> getGradient(cell, direction, c -> c
-                .velocity().value(d), DerivativeType.FIRST, Optional.empty());
+                .velocity().value(d), DerivativeType.FIRST);
         return Vector.create(gradient);
     }
 
     private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getContinuityFunction(cell,
-                Util.override(cell, cell.type(), newVelocity, pressure));
+        return pressure -> getContinuityFunction(Util.override(cell, cell.type(), newVelocity,
+                pressure));
     }
 
-    private double getContinuityFunction(Cell cell, Cell override) {
-        final double pressureLaplacian = getPressureLaplacian(cell, override);
-        final Function<Direction, Double> f = d -> override.velocity().value(d)
-                * getGradient(cell, d, gradientDot(d), DerivativeType.FIRST, Optional.of(override));
+    private double getContinuityFunction(Cell cell) {
+        final double pressureLaplacian = getPressureLaplacian(cell);
+        final Function<Direction, Double> f = d -> cell.velocity().value(d)
+                * getGradient(cell, d, gradientDot(d), DerivativeType.FIRST);
         return pressureLaplacian + Vector.create(f).sum();
     }
 
@@ -125,13 +123,13 @@ public class Solver {
         return cell -> getVelocityGradient(cell, d).dotProduct(cell.velocity());
     }
 
-    private double getPressureLaplacian(Cell cell, Cell override) {
-        return getPressureGradient2nd(cell, override).sum();
+    private double getPressureLaplacian(Cell cell) {
+        return getPressureGradient2nd(cell).sum();
     }
 
-    private Vector getPressureGradient2nd(Cell cell, Cell override) {
+    private Vector getPressureGradient2nd(Cell cell) {
         final Function<Direction, Double> f = d -> getGradient(cell, d, c -> c.pressure(),
-                DerivativeType.SECOND, Optional.of(override));
+                DerivativeType.SECOND);
         return Vector.create(f);
     }
 
@@ -143,11 +141,8 @@ public class Solver {
             // function
             Function<Cell, Double> f,
             // first or second derivative
-            DerivativeType derivativeType,
-            // override cell values if present
-            Optional<Cell> override) {
-        final Cell c = override.orElse(cell);
-        return getGradient(f, cell.neighbour(d, -1), c, cell.neighbour(d, 1), d, derivativeType);
+            DerivativeType derivativeType) {
+        return getGradient(f, cell.neighbour(d, -1), cell, cell.neighbour(d, 1), d, derivativeType);
     }
 
     private double getGradient(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3, Direction d,
