@@ -64,13 +64,13 @@ For a vector **v**,
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>**v** = (&nabla;<sup>2</sup>v<sub>x</sub>,&nabla;<sup>2</sup>v<sub>y</sub>,&nabla;<sup>2</sup>v<sub>z</sub>)
 
-**v** &sdot; &nabla is the [Jacobian matrix](http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant) of all first order partial derivatives of velocity:
+**v** &sdot; &nabla; is the [Jacobian matrix](http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant) of all first order partial derivatives of velocity:
 
 So **v** &sdot; &nabla; =
 
-&delta;v<sub>x/&delta;x |&delta;v<sub>x/&delta;y |&delta;v<sub>x/&delta;z |    
-&delta;v<sub>y/&delta;x |&delta;v<sub>y/&delta;y |&delta;v<sub>y/&delta;z |
-&delta;v<sub>z/&delta;x |&delta;v<sub>z/&delta;y |&delta;v<sub>z/&delta;z |
+|&delta;v<sub>x/&delta;x |&delta;v<sub>x/&delta;y |&delta;v<sub>x/&delta;z |    
+|&delta;v<sub>y/&delta;x |&delta;v<sub>y/&delta;y |&delta;v<sub>y/&delta;z |
+|&delta;v<sub>z/&delta;x |&delta;v<sub>z/&delta;y |&delta;v<sub>z/&delta;z |
 
 
 Derivatives
