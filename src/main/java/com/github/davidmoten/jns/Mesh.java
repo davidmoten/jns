@@ -5,7 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Mesh {
+
+    private static Logger log = LoggerFactory.getLogger(Mesh.class);
 
     private final double cellSizeEast;
     private final double cellSizeNorth;
@@ -99,8 +104,10 @@ public class Mesh {
 
     public Mesh stepMultiple(double timeStepSeconds, long numberOfSteps) {
         Mesh m = this;
-        for (int i = 0; i < numberOfSteps; i++)
+        for (int i = 0; i < numberOfSteps; i++) {
+            log.info("step " + i);
             m = m.step(timeStepSeconds);
+        }
         return m;
     }
 

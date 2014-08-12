@@ -202,8 +202,6 @@ public class Solver {
 
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Direction d,
             DerivativeType derivativeType) {
-        log.debug("c1={}", c1.position());
-        log.debug("c2={}", c2.position());
         if (derivativeType == DerivativeType.FIRST) {
             return validate((f.apply(c2) - f.apply(c1))
                     / (c2.position().value(d) - c1.position().value(d)));

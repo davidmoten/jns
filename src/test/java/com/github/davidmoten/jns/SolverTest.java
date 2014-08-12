@@ -2,6 +2,7 @@ package com.github.davidmoten.jns;
 
 import static com.github.davidmoten.jns.TestingUtil.createMesh;
 import static com.github.davidmoten.jns.TestingUtil.createMesh2D;
+import static com.github.davidmoten.jns.TestingUtil.createMeshForWhirlpool2D;
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -130,9 +131,8 @@ public class SolverTest {
 
     @Test
     public void testWhirlpool() {
-        final Mesh mesh = TestingUtil.createMeshForWhirlpool2D();
-        Mesh mesh2 = mesh.stepMultiple(1, 5);
-        Cell cell = mesh2.cell(5, 8, 0);
+        final Mesh mesh = createMeshForWhirlpool2D().stepMultiple(1, 20);
+        Cell cell = mesh.cell(5, 8, 0);
         Vector v = cell.velocity();
         log.info("vector={}", v);
         assertTrue(v.north() != 0);
