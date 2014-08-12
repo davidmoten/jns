@@ -81,7 +81,7 @@ Numerical approximations for the derivatives (first and second) of a function f 
 
 &nbsp;&nbsp;Then
 
-&nbsp;&nbsp;&nbsp;&nbsp;f '(x) &#8776; <sup>(f(b) - f(a))</sup>&frasl;<sub>(b - a)</sub>
+&nbsp;&nbsp;&nbsp;&nbsp;f '(x) &#8776; (f(b) - f(a)) / (b - a)
 
 &nbsp;&nbsp;&nbsp;&nbsp;f ''(x) &#8776; (f(b) + f(a) - 2f(x)) / (b-a)<sup>2</sup>
 
