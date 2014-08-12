@@ -3,7 +3,12 @@ package com.github.davidmoten.jns;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class NewtonsMethod {
+
+    private static final Logger log = LoggerFactory.getLogger(NewtonsMethod.class);
 
     public static Optional<Double> solve(Function<Double, Double> f, double initialValue,
             double delta, double precision, int maxIterations) {
@@ -11,7 +16,9 @@ public class NewtonsMethod {
         checkParameters(f, delta, precision, maxIterations);
         double fx = f.apply(x);
         int i = 1;
+        log.debug("x={}, fx={}", x, fx);
         while (Math.abs(fx) > precision && i <= maxIterations) {
+            log.debug("x={}, fx={}", x, fx);
             final double gradient = (f.apply(x + delta) - fx) / delta;
             if (gradient == 0)
                 return Optional.empty();

@@ -72,6 +72,9 @@ For a vector **v**,
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;z<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;z<br/> 
 
+The [Divergence operator](http://en.wikipedia.org/wiki/Divergence) is defined by:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla; &sdot; **v** = &delta;v<sub>x</sub>/&delta;x + &delta;v<sub>y</sub>/&delta;y + &delta;v<sub>z</sub>/&delta;z 
 
 Computation of derivatives
 --------------------------------

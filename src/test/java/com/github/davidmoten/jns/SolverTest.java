@@ -6,6 +6,7 @@ import static com.github.davidmoten.jns.TestingUtil.createMeshForWhirlpool2D;
 import static com.github.davidmoten.jns.Util.pressureAtDepth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -131,11 +132,14 @@ public class SolverTest {
 
     @Test
     public void testWhirlpool() {
-        final Mesh mesh = createMeshForWhirlpool2D().stepMultiple(1, 20);
+        Mesh m = createMeshForWhirlpool2D();
+        double initialPressure = m.cell(5, 8, 0).pressure();
+        final Mesh mesh = m.stepMultiple(1, 20);
         Cell cell = mesh.cell(5, 8, 0);
         Vector v = cell.velocity();
         log.info("vector={}", v);
         assertTrue(v.north() != 0);
+        assertNotEquals(initialPressure, cell.pressure());
     }
 
     private Mesh checkNoChange(int eastIndex, int northIndex, int upIndex) {

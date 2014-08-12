@@ -44,6 +44,8 @@ public class Solver {
                 maxIterations)
         // don't accept negative values
                 .filter(d -> d >= 0);
+        if (!p.isPresent())
+            unexpected("could not find pressure at " + str(cell));
         return p.orElse(cell.pressure());
     }
 
