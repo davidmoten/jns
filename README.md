@@ -21,15 +21,15 @@ In terms of reference material I've found very detailed mathematical discussions
 
 Navier-Stokes Equations
 -------------------------
-The conservation of momentum equation is:
+The momentum equation is:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho;( &delta;**v**/&delta;t + (**v** &sdot; &nabla;)**v** ) = -&nabla;p + &mu;&nabla;<sup>2</sup>**v** + **f**
 
-The governing equation for pressure computation (derived via conservation of mass) is:
+The governing equation for pressure computation (derived via *conservation of mass*) is:
 
-    ∇2p = -∇ ⋅ (v ⋅ ∇)v
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
-where
+where 
 
 &nbsp;&nbsp;&nbsp;&nbsp;&rho; = fluid density
 
@@ -43,6 +43,8 @@ where
 
 &nbsp;&nbsp;&nbsp;&nbsp;&mu; = viscosity (1 / Reynolds number)
 
+###Explanatory notes
+
 Note that for the term **f** above in the case of gravity this is a vector with z coordinate equal 
 to the force exerted by gravity on a cubic metre of fluid. This is thus 
 
@@ -51,10 +53,6 @@ to the force exerted by gravity on a cubic metre of fluid. This is thus
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -10055.25kgm/s<sup>2</sup>
 
 So in this case **f** = (0,0,-10055.25) assuming gravity is the only extraneous force.
-
-The governing equation for pressure computation (derived via *conservation of mass*) is:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
 &nabla; is the [Gradient operator](http://en.wikipedia.org/wiki/Gradient#Definition) and is defined by:
 
@@ -70,13 +68,13 @@ For a vector **v**,
 
 **v** &sdot; &nabla; is the [Jacobian matrix](http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant) of all first order partial derivatives of velocity:
 
-&nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;z   
+&nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;z<br/>    
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;z<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;z<br/> 
 
 
-Derivatives
--------------
+Computation of derivatives
+--------------------------------
 Numerical approximations for the derivatives (first and second) of a function f are given by:
 
 &nbsp;&nbsp;Suppose the point x has two close neighbours a,b (a<x<b)
