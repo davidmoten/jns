@@ -52,6 +52,10 @@ The governing equation for pressure computation (derived via *conservation of ma
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>p = -&nabla; &sdot; (**v** &sdot; &nabla;)**v**
 
+&nabla; is the [Gradient operator](http://en.wikipedia.org/wiki/Gradient#Definition) and is defined by:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nabla;f = ( &delta;f/&delta;x, &delta;f/&delta;y, &delta;f/&delta;z)
+
 &nabla;<sup>2</sup> is the [Laplacian operator](http://en.wikipedia.org/wiki/Laplace_operator) and is defined by:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nabla;<sup>2</sup>f = &delta;<sup>2</sup>f/&delta;x<sup>2</sup> + &delta;<sup>2</sup>f/&delta;y<sup>2</sup> + &delta;<sup>2</sup>f/&delta;z<sup>2</sup> 
