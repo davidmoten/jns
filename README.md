@@ -66,8 +66,6 @@ For a vector **v**,
 
 **v** &sdot; &nabla; is the [Jacobian matrix](http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant) of all first order partial derivatives of velocity:
 
-So **v** &sdot; &nabla; =
-
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>x</sub>/&delta;z   
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>y</sub>/&delta;z<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;x&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;y&nbsp;&nbsp;&delta;v<sub>z</sub>/&delta;z<br/> 
