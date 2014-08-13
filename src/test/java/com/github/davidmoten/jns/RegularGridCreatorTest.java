@@ -14,8 +14,8 @@ public class RegularGridCreatorTest {
         Mesh grid = createMesh();
         Cell cell = grid.cell(5, 5, 0);
         assertEquals(CellType.FLUID, cell.type());
-        assertEquals(CellType.FLUID, cell.neighbour(Direction.UP, 1).type());
-        assertEquals(CellType.OBSTACLE, cell.neighbour(Direction.UP, -1).type());
+        assertEquals(CellType.FLUID, cell.up().type());
+        assertEquals(CellType.OBSTACLE, cell.down().type());
         assertEquals(Util.SEA_LEVEL_PRESSURE_PASCALS, grid.cell(5, 5, 9).pressure(), PRECISION);
         assertEquals(Util.pressureAtDepth(1), grid.cell(5, 5, 8).pressure(), PRECISION);
         assertEquals(Util.pressureAtDepth(9), grid.cell(5, 5, 0).pressure(), PRECISION);

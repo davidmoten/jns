@@ -92,8 +92,8 @@ public class SolverTest {
     public void testTransform2D() {
         final Mesh mesh = createMesh2D();
         final Cell c2 = mesh.cell(5, 9, 0);
-        final Cell c1 = c2.neighbour(Direction.UP, -1);
-        final Cell c3 = c2.neighbour(Direction.UP, 1);
+        final Cell c1 = c2.down();
+        final Cell c3 = c2.up();
         log.info("cells={}.{},{}", c1.position(), c2.position(), c3.position());
         final CellTriplet t = Solver.transform(CellTriplet.create(c1, c2, c3));
         log.info("cells={}.{},{}", t.c1().position(), t.c2().position(), t.c3().position());
@@ -125,7 +125,7 @@ public class SolverTest {
         assertEquals(CellType.FLUID, mesh.cell(5, 9, 0).type());
         checkEquals(Vector.create(1, 0, 0), cell.velocity(), VELOCITY_PRECISION);
         assertEquals(CellType.UNKNOWN, mesh.cell(5, 9, 1).type());
-        assertEquals(CellType.OBSTACLE, cell.neighbour(Direction.UP, -1).type());
+        assertEquals(CellType.OBSTACLE, cell.down().type());
         checkEquals(Vector.create(1, 0, 0), solver.getVelocityAfterTime(cell, 1),
                 VELOCITY_PRECISION);
     }
