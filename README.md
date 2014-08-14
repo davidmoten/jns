@@ -20,6 +20,20 @@ In terms of reference material I've found very detailed mathematical discussions
 * [Computational Methods for Fluid Dynamics](https://docs.google.com/file/d/0B7WvmGcRs5CzanBEeDlDaEk3dEU/edit) by Ferziger and Peric
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
 
+
+Aims:
+--------------
+* decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease.
+* the algorithm should be clearly visible in the code
+* minimize pollution of code with data structure choices (array iterations for example)
+* accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
+* consider using lazy computation
+
+
+Unit tests will be created for regular grid meshes.
+
+The [Solver](src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fdavidmoten%2Fjns%2FSolver.java) class is the main entry point.
+
 Navier-Stokes Equations
 -------------------------
 The momentum equation is:
@@ -88,21 +102,6 @@ Numerical approximations for the derivatives (first and second) of a function f 
 &nbsp;&nbsp;&nbsp;&nbsp;f '(x) &#8776; (f(b) - f(a)) / (b - a)
 
 &nbsp;&nbsp;&nbsp;&nbsp;f ''(x) &#8776; (f(b) + f(a) - 2f(x)) / (b-a)<sup>2</sup>
-
-Architecture
---------------
-Aims:
-
-* decouple the algorithm, the mesh, derivative methods, root solver so that the program can be altered with ease.
-* the algorithm should be clearly visible in the code
-* minimize pollution of code with data structure choices (array iterations for example)
-* accept performance degradation arising from the decoupling but seek to later leverage concurrency possibly in a distributed fashion.
-* consider using lazy computation
-
-
-Unit tests will be created for regular grid meshes.
-
-The [Solver](src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fdavidmoten%2Fjns%2FSolver.java) class is the main entry point.
 
 
 Lazy computation
