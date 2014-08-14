@@ -19,6 +19,7 @@ In terms of reference material I've found very detailed mathematical discussions
 * [The Simple Algorithm lecture from Purdue Uni](https://engineering.purdue.edu/ME608/webpage/l33.pdf)
 * [Computational Methods for Fluid Dynamics](https://docs.google.com/file/d/0B7WvmGcRs5CzanBEeDlDaEk3dEU/edit) by Ferziger and Peric
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
+* [A finite volume method to solve the 3D Navier-Stokes equations on unstructured colocated meshes](http://www.cmi.univ-mrs.fr/~herard/Public/perronCAF010403.pdf)
 
 
 Aims:
