@@ -102,7 +102,7 @@ public class Solver {
 
     private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getContinuityFunction2(Util.override(cell, cell.type(), newVelocity,
+        return pressure -> getContinuityFunction(Util.override(cell, cell.type(), newVelocity,
                 pressure));
     }
 
