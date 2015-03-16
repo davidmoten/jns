@@ -53,4 +53,9 @@ public class Indices {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Indices [east=" + east + ", north=" + north + ", up=" + up + "]";
+    }
+
 }
