@@ -59,7 +59,7 @@ where
 
 &nbsp;&nbsp;&nbsp;&nbsp;&mu; = viscosity (1 / Reynolds number)
 
-###Explanatory notes
+### Explanatory notes
 
 Note that for the term **f** above in the case of gravity this is a vector with z coordinate equal 
 to the force exerted by gravity on a cubic metre of fluid. This is thus 
