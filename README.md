@@ -20,6 +20,7 @@ In terms of reference material I've found very detailed mathematical discussions
 * [Computational Methods for Fluid Dynamics](https://docs.google.com/file/d/0B7WvmGcRs5CzanBEeDlDaEk3dEU/edit) by Ferziger and Peric
 * [2D solver in mathematica](http://blog.wolfram.com/2013/07/09/using-mathematica-to-simulate-and-visualize-fluid-flow-in-a-box/)
 * [A finite volume method to solve the 3D Navier-Stokes equations on unstructured colocated meshes](http://www.cmi.univ-mrs.fr/~herard/Public/perronCAF010403.pdf)
+* Validation using [Taylor-Green Vortex](https://en.wikipedia.org/wiki/Taylor%E2%80%93Green_vortex) or Lid Driven Cavity Problem
 
 
 Aims:
