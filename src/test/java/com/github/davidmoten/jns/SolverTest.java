@@ -201,8 +201,11 @@ public class SolverTest {
     }
 
     private static Builder builder() {
-        return CellImpl.builder().pressure(pressureAtDepth(1))
-                .density(Util.SEAWATER_MEAN_DENSITY_KG_PER_M3).viscosity(30).type(CellType.FLUID)
+        return CellImpl.builder() //
+                .pressure(pressureAtDepth(1)) //
+                .density(Util.SEAWATER_MEAN_DENSITY_KG_PER_M3) //
+                .viscosity(30) //
+                .type(CellType.FLUID) //
                 .velocity(0, 0, 0);
     }
 
