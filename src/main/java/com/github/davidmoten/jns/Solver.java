@@ -42,8 +42,8 @@ public class Solver {
         final int maxIterations = 15;
         final Optional<Double> p = solve(continuityFunction, cell.pressure(), delta, precision,
                 maxIterations)
-        // don't accept negative values
-                .filter(d -> d >= 0);
+                        // don't accept negative values
+                        .filter(d -> d >= 0);
         if (!p.isPresent())
             unexpected("could not find pressure at " + str(cell));
         return p.orElse(cell.pressure());
@@ -61,8 +61,8 @@ public class Solver {
         final Matrix velocityJacobian = getVelocityJacobian(cell);
         final Vector divergenceOfStress = velocityLaplacian.times(cell.viscosity())
                 .minus(pressureGradient).add(pressureGradientDueToGravity(cell));
-        final Vector result = divergenceOfStress.divideBy(cell.density()).minus(
-                velocityJacobian.times(cell.velocity()));
+        final Vector result = divergenceOfStress.divideBy(cell.density())
+                .minus(velocityJacobian.times(cell.velocity()));
         return result;
     }
 
@@ -81,8 +81,8 @@ public class Solver {
             return c -> c.velocity().value(d);
         };
         final Function<Direction, Double> gradient =
-        // gradient in given direction
-        d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND);
+                // gradient in given direction
+                d -> getGradient(cell, direction, velocity.apply(d), DerivativeType.SECOND);
 
         return Vector.create(gradient);
     }
@@ -102,8 +102,8 @@ public class Solver {
 
     private Function<Double, Double> getContinuityFunction(Cell cell, Vector newVelocity,
             double timeStepSeconds) {
-        return pressure -> getContinuityFunction(Util.override(cell, cell.type(), newVelocity,
-                pressure));
+        return pressure -> getContinuityFunction(
+                Util.override(cell, cell.type(), newVelocity, pressure));
     }
 
     private double getContinuityFunction(Cell cell) {
@@ -126,8 +126,8 @@ public class Solver {
     }
 
     private Vector getVelocityGradient(Cell cell, Direction direction) {
-        final Function<Direction, Double> gradientFn = d -> getGradient(cell, direction, c -> c
-                .velocity().value(d), DerivativeType.FIRST);
+        final Function<Direction, Double> gradientFn = d -> getGradient(cell, direction,
+                c -> c.velocity().value(d), DerivativeType.FIRST);
         return Vector.create(gradientFn);
     }
 
@@ -142,7 +142,7 @@ public class Solver {
     }
 
     private double getGradient(
-    // cell
+            // cell
             Cell cell,
             // direction
             Direction d,
@@ -208,8 +208,7 @@ public class Solver {
     private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Direction d,
             DerivativeType derivativeType) {
         if (derivativeType == DerivativeType.FIRST) {
-            return validate((f.apply(c2) - f.apply(c1))
-                    / (c2.position().value(d) - c1.position().value(d)));
+            return firstDerivative(f, c1, c2, d);
         } else if (derivativeType == DerivativeType.SECOND)
             // only have two points so must assume 2nd derivative is zero
             return 0;
@@ -217,16 +216,31 @@ public class Solver {
             return unexpected();
     }
 
-    private double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
+    private static double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
             Direction d, DerivativeType derivativeType) {
         if (derivativeType == DerivativeType.FIRST) {
-            return validate((f.apply(c3) - f.apply(c1))
-                    / (c3.position().value(d) - c1.position().value(d)));
+            return firstDerivative(f, c1, c2, c3, d);
         } else if (derivativeType == DerivativeType.SECOND)
-            return validate((f.apply(c3) + f.apply(c1) - 2 * f.apply(c2))
-                    / sqr(c3.position().value(d) - c1.position().value(d)));
+            return secondDerivative(f, c1, c2, c3, d);
         else
             return unexpected();
+    }
+
+    private static double firstDerivative(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
+            Direction d) {
+        return validate(
+                (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d)));
+    }
+
+    private static double firstDerivative(Function<Cell, Double> f, Cell c1, Cell c3, Direction d) {
+        return validate(
+                (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d)));
+    }
+
+    private static double secondDerivative(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
+            Direction d) {
+        return validate((f.apply(c3) + f.apply(c1) - 2 * f.apply(c2))
+                / sqr(c3.position().value(d) - c1.position().value(d)));
     }
 
     private static double sqr(double d) {
@@ -242,8 +256,8 @@ public class Solver {
     }
 
     /**
-     * Returns a {@link Cell} representation of an obstacle that exists with
-     * respect to the the cell <code>wrt</code>.
+     * Returns a {@link Cell} representation of an obstacle that exists with respect
+     * to the the cell <code>wrt</code>.
      *
      * @param obstacle
      * @param wrt
@@ -261,9 +275,8 @@ public class Solver {
     }
 
     private static double getEquilibriumPressureRelativeTo(Cell obstacle, Cell wrt) {
-        final double p = wrt.pressure()
-                + obstacle.position().minus(wrt.position())
-                        .dotProduct(Util.pressureGradientDueToGravity(wrt));
+        final double p = wrt.pressure() + obstacle.position().minus(wrt.position())
+                .dotProduct(Util.pressureGradientDueToGravity(wrt));
         return p;
     }
 }
