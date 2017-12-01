@@ -22,8 +22,9 @@ public class Solver {
     private static Logger log = LoggerFactory.getLogger(Solver.class);
 
     public VelocityPressure step(Cell cell, double timeStepSeconds) {
-        if (cell.isBoundary())
+        if (cell.isBoundary()) {
             return new VelocityPressure(cell.velocity(), cell.pressure());
+        }
         log.debug("step {}", str(cell));
         // explicit time advance scheme as per Ferziger and Peric 7.3.2
         final Vector v = getVelocityAfterTime(cell, timeStepSeconds);
@@ -44,8 +45,9 @@ public class Solver {
                 maxIterations)
                         // don't accept negative values
                         .filter(d -> d >= 0);
-        if (!p.isPresent())
+        if (!p.isPresent()) {
             unexpected("could not find pressure at " + str(cell));
+        }
         return p.orElse(cell.pressure());
     }
 
@@ -162,10 +164,11 @@ public class Solver {
                 final CellTriplet t = transform(c1, c2, c3);
                 if (is(FLUID, FLUID, FLUID, t)) {
                     return getGradientFromFluid(f, t.c1(), t.c2(), t.c3(), d, derivativeType);
-                } else if (is(FLUID, FLUID, UNKNOWN, t))
+                } else if (is(FLUID, FLUID, UNKNOWN, t)) {
                     return getGradientFromFluid(f, t.c1(), t.c2(), d, derivativeType);
-                else
+                } else {
                     return unexpected();
+                }
             } catch (final RuntimeException e) {
                 log.error("{}:{},{},{}", d, c1.position(), c2.position(), c3.position());
                 throw e;
@@ -226,11 +229,13 @@ public class Solver {
             return unexpected();
     }
 
-//    private static double firstDerivativeFirstOrder(Function<Cell, Double> f, Cell c1, Cell c2,
-//            Cell c3, Direction d) {
-//        return validate(
-//                (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d)));
-//    }
+    // private static double firstDerivativeFirstOrder(Function<Cell, Double> f,
+    // Cell c1, Cell c2,
+    // Cell c3, Direction d) {
+    // return validate(
+    // (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) -
+    // c1.position().value(d)));
+    // }
 
     private static double firstDerivativeSecondOrder(Function<Cell, Double> f, Cell c1, Cell c2,
             Cell c3, Direction d) {
