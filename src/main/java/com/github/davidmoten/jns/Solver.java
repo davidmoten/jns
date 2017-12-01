@@ -219,17 +219,34 @@ public class Solver {
     private static double getGradientFromFluid(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
             Direction d, DerivativeType derivativeType) {
         if (derivativeType == DerivativeType.FIRST) {
-            return firstDerivative(f, c1, c2, c3, d);
+            return firstDerivativeSecondOrder(f, c1, c2, c3, d);
         } else if (derivativeType == DerivativeType.SECOND)
             return secondDerivative(f, c1, c2, c3, d);
         else
             return unexpected();
     }
 
-    private static double firstDerivative(Function<Cell, Double> f, Cell c1, Cell c2, Cell c3,
-            Direction d) {
-        return validate(
-                (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d)));
+//    private static double firstDerivativeFirstOrder(Function<Cell, Double> f, Cell c1, Cell c2,
+//            Cell c3, Direction d) {
+//        return validate(
+//                (f.apply(c3) - f.apply(c1)) / (c3.position().value(d) - c1.position().value(d)));
+//    }
+
+    private static double firstDerivativeSecondOrder(Function<Cell, Double> f, Cell c1, Cell c2,
+            Cell c3, Direction d) {
+        double a = c1.position().value(d);
+        double b = c2.position().value(d);
+        double c = c3.position().value(d);
+        double h1 = b - a;
+        double h2 = c - b;
+        double sqrH1 = h1 * h1;
+        double sqrH2 = h2 * h2;
+        double fa = f.apply(c1);
+        double fb = f.apply(c2);
+        double fc = f.apply(c3);
+        double result = ((sqrH2 - sqrH1) * fb + sqrH1 * fc - sqrH2 * fa)
+                / (sqrH1 * h2 + h1 * sqrH2);
+        return validate(result);
     }
 
     private static double firstDerivative(Function<Cell, Double> f, Cell c1, Cell c3, Direction d) {
