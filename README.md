@@ -105,6 +105,18 @@ Numerical approximations for the derivatives (first and second) of a function f 
 
 &nbsp;&nbsp;&nbsp;&nbsp;f ''(x) &#8776; (f(b) + f(a) - 2f(x)) / (b-a)<sup>2</sup>
 
+A second order approximation to the first derivative is:
+
+&nbsp;&nbsp;&nbsp;&nbsp;f '(x) &#8776; (h<sub>2</sub><sup>2</sup> - h<sub>1</sub><sup>2</sup>)f(b) + 
+h<sub>1</sub><sup>2</sup>f(c) - h<sub>2</sub><sup>2</sup>f(a))/(h<sub>1</sub><sup>2</sup>h<sub>2</sub> + h<sub>1</sub>h<sub>2</sub><sup>2</sup>)
+
+where
+
+&nbsp;&nbsp;&nbsp;&nbsp;h<sub>1</sub> = b - a
+
+&nbsp;&nbsp;&nbsp;&nbsp;h<sub>2</sub> = c - b
+
+
 
 Lazy computation
 -------------------
