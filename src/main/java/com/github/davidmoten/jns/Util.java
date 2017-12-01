@@ -20,8 +20,8 @@ public class Util {
     }
 
     public static double pressureAtDepth(double depthMetres) {
-        return SEA_LEVEL_PRESSURE_PASCALS + SEAWATER_MEAN_DENSITY_KG_PER_M3 * depthMetres
-                * GRAVITY_M_PER_S2;
+        return SEA_LEVEL_PRESSURE_PASCALS
+                + SEAWATER_MEAN_DENSITY_KG_PER_M3 * depthMetres * GRAVITY_M_PER_S2;
     }
 
     public static Vector pressureGradientDueToGravity(Cell cell) {
@@ -63,14 +63,19 @@ public class Util {
         final Function<Indices, Boolean> isBoundary = i -> {
             return i.north() == cellsNorth - 1;
         };
-        return Mesh
-                .builder()
-                .cellSize(1)
-                .creator(
-                        CellCreator.builder().cellsEast(cellsEast).cellsNorth(cellsNorth)
-                                .cellsUp(cellsUp).typeFunction(typeFunction)
-                                .velocityFunction(velocityFunction).isBoundaryFunction(isBoundary)
-                                .build()).build();
+        return Mesh //
+                .builder() //
+                .cellSize(1) //
+                .creator(CellCreator //
+                .builder() //
+                .cellsEast(cellsEast) //
+                .cellsNorth(cellsNorth) //
+                .cellsUp(cellsUp) //
+                .typeFunction(typeFunction) //
+                .velocityFunction(velocityFunction) //
+                .isBoundaryFunction(isBoundary) //
+                .build()) //
+                .build();
     }
 
     public static boolean isValid(Double d) {
