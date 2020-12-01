@@ -87,6 +87,12 @@
             <version>${rxjava.version}</version>
         </dependency>
         
+         <dependency>
+            <groupId>org.ejml</groupId>
+            <artifactId>ejml-all</artifactId>
+            <version>0.40</version>
+        </dependency>
+        
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
