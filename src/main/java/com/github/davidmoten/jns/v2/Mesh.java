@@ -39,6 +39,10 @@ public class Mesh {
 
     private final double[] xm; // middles of x positions
     private final double[] ym; // middles of y positions
+    private final double dx;
+    private final double dy;
+    private final double dxi;
+    private final double dyi;
 
 //    % Index extents
 //    imin =2; imax=imin+nx−1;
@@ -96,8 +100,12 @@ public class Mesh {
             ym[j] = (y[j] + y[j + 1]) / 2;
         }
 
+        dx = x[imin + 1] - x[imin];
+        dy = y[jmin + 1] - y[jmin];
+        dxi = 1 / dx;
+        dyi = 1 / dy;
     }
-    
+
     public static void main(String[] args) {
         new Mesh(5, 6, 10, 20);
     }
