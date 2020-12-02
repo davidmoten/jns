@@ -76,7 +76,11 @@ public class Mesh {
 //        • The mesh sizes are precomputed to save computational cost. Additionally dxi = 1/dx and dyi = 1/dy
 //        are also precomputed since divisions are significantly more computationally expensive than multiplications.
 
-    public Mesh(int nx, int ny, double lx, double ly, double nu, double rho) {
+    public Mesh(int nx, int ny, double lx, double ly, double nu, double rho, double[][] initialU,
+            double[][] initialV) {
+        //TODO do a more comprehensive check
+        checkSize(initialU, lx, ly);
+        checkSize(initialV, lx, ly);
         this.nx = nx;
         this.ny = ny;
         this.lx = lx;
@@ -116,10 +120,24 @@ public class Mesh {
         dy = y[jmin + 1] - y[jmin];
         dxi = 1 / dx;
         dyi = 1 / dy;
-        
-     // components of velocity
+
+        // components of velocity
         u = new double[nx + 2][ny + 2];
         v = new double[nx + 2][ny + 2];
+        
+        for (int i=imin; i<=imax; i++) {
+            for (int j = jmin; j<=jmax; j++) {
+                u[i][j] = initialU[i - imin][j - jmin];
+                v[i][j] = initialV[i - imin][j - jmin];
+            }
+        }
+    }
+
+    private static void checkSize(double[][] matrix, double lx, double ly) {
+        Preconditions.checkArgument(matrix.length == lx);
+        for (int i = 0; i< matrix.length; i++) {
+            Preconditions.checkArgument(matrix[i].length == ly);
+        }
     }
 
     public void run(double[] uTop, double[] uBottom, double[] vLeft, double[] vRight, double dt) {
@@ -128,7 +146,6 @@ public class Mesh {
         Preconditions.checkArgument(uBottom.length == lx);
         Preconditions.checkArgument(vLeft.length == ly);
         Preconditions.checkArgument(vRight.length == ly);
-
 
         // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
