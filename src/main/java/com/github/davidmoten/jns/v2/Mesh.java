@@ -43,6 +43,8 @@ public class Mesh {
     private final double dy;
     private final double dxi;
     private final double dyi;
+    private final double dt;
+    private double nu;
 
 //    % Index extents
 //    imin =2; imax=imin+nx−1;
@@ -66,11 +68,13 @@ public class Mesh {
 //        • The mesh sizes are precomputed to save computational cost. Additionally dxi = 1/dx and dyi = 1/dy
 //        are also precomputed since divisions are significantly more computationally expensive than multiplications.
 
-    public Mesh(int nx, int ny, double lx, double ly) {
+    public Mesh(int nx, int ny, double lx, double ly, double dt, double nu) {
         this.nx = nx;
         this.ny = ny;
         this.lx = lx;
         this.ly = ly;
+        this.dt = dt;
+        this.nu = nu;
 
         this.imin = 1;
         this.imax = imin + nx - 1;
@@ -106,8 +110,29 @@ public class Mesh {
         dyi = 1 / dy;
     }
 
+    public void run() {
+        // discretize u and v components
+        double[][] u = new double[nx + 2][ny + 2];
+        double[][] v = new double[nx + 2][ny + 2];
+        double[][] us = new double[nx + 2][ny + 2];
+
+        for (int j = jmin; j <= jmax; j++) {
+            for (int i = imin + 1; i <= imax; i++) {
+                double vmiddle = 0.25 * (v[i - 1][j] + v[i - 1][j + 1] + v[i][j] + v[i][j + 1]);
+                double d2udx2 = (u[i - 1][j] - 2 * u[i][j] + u[i + 1][j]) / dx / dx;
+                double d2udy2 = (u[i][j - 1] - 2 * u[i][j] + u[i][j + 1]) / dy / dy;
+                double dudx = (u[i + 1][j] - u[i - 1][j]) / 2 / dx;
+                double dudy = (u[i][j + 1] - u[i][j - 1]) / 2 / dy;
+                us[i][j] = u[i][j]
+                        + dt * (nu * (d2udx2 + d2udy2) - (u[i][j] * dudx + vmiddle * dudy));
+
+            }
+        }
+
+    }
+
     public static void main(String[] args) {
-        new Mesh(5, 6, 10, 20);
+        new Mesh(5, 6, 10, 20, 1.0, 1).run();
     }
 
 }
