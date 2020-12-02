@@ -2,9 +2,9 @@ package com.github.davidmoten.jns.v2;
 
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.DMatrixSparseCSC;
-import org.ejml.data.Matrix;
-import org.ejml.interfaces.linsol.LinearSolverSparse;
 import org.ejml.sparse.csc.CommonOps_DSCC;
+
+import com.github.davidmoten.guavamini.Preconditions;
 
 /**
  *
@@ -49,7 +49,6 @@ public class Mesh {
     private final double dy;
     private final double dxi;
     private final double dyi;
-    private final double dt;
     private final double nu;
     private final double rho;
 
@@ -75,12 +74,11 @@ public class Mesh {
 //        • The mesh sizes are precomputed to save computational cost. Additionally dxi = 1/dx and dyi = 1/dy
 //        are also precomputed since divisions are significantly more computationally expensive than multiplications.
 
-    public Mesh(int nx, int ny, double lx, double ly, double dt, double nu, double rho) {
+    public Mesh(int nx, int ny, double lx, double ly, double nu, double rho) {
         this.nx = nx;
         this.ny = ny;
         this.lx = lx;
         this.ly = ly;
-        this.dt = dt;
         this.nu = nu;
         this.rho = rho;
 
@@ -118,7 +116,12 @@ public class Mesh {
         dyi = 1 / dy;
     }
 
-    public void run() {
+    public void run(double[] uTop, double[] uBottom, double[] vLeft, double[] vRight, double dt) {
+
+        Preconditions.checkArgument(uTop.length == lx);
+        Preconditions.checkArgument(uBottom.length == lx);
+        Preconditions.checkArgument(vLeft.length == ly);
+        Preconditions.checkArgument(vRight.length == ly);
 
         // components of velocity
         double[][] u = new double[nx + 2][ny + 2];
@@ -129,6 +132,18 @@ public class Mesh {
 
         // vstart is intermediate v till pressure correction happens
         double[][] vs = new double[nx + 2][ny + 2];
+
+        // apply boundary conditions
+
+        for (int i = imin - 1; i <= imax + 1; i++) {
+            u[i][jmin - 1] = u[i][jmin] - 2 * (u[i][jmin] - uBottom[i]);
+            u[i][jmax + 1] = u[i][jmax] - 2 * (u[i][jmax] - uTop[i]);
+        }
+
+        for (int j = jmin - 1; j <= jmax + 1; j++) {
+            v[imin - 1][j] = v[imin][j] - 2 * (v[imin][j] - vLeft[j]);
+            v[imax + 1][j] = v[imax][j] - 2 * (v[imax][j] - vRight[j]);
+        }
 
         // The convective and viscous terms in Eq. 4 are discretized using finite
         // differences which approximate the derivatives using neighboring values.
@@ -207,22 +222,47 @@ public class Mesh {
             }
         }
 
-        double[] r = new double[nx * ny];
+        DMatrixRMaj pv = new DMatrixRMaj(nx * ny, 1);
+        {
+            double[] r = new double[nx * ny];
+            int n = 0;
+            for (int j = jmin; j <= jmax; j++) {
+                for (int i = imin; i <= imax; i++) {
+                    n++;
+                    r[n - 1] = -rho / dt * ( //
+                    (us[i + 1][j] - us[i][j]) * dxi //
+                            + (vs[i][j + 1] - vs[i][j]) * dyi);
+                }
+            }
+            CommonOps_DSCC.solve(laplacian, new DMatrixRMaj(r), pv);
+        }
+
+        // convert the pressure vector to a matrix
         int n = 0;
-        for (int j = jmin; j <= jmax; j++) {
-            for (int i = imin; i <= imax; i++) {
+        double[][] p = new double[nx][ny];
+        for (int i = imin; i <= imax; i++) {
+            for (int j = jmin; j <= jmax; j++) {
                 n++;
-                r[n - 1] = -rho / dt * ( //
-                (us[i + 1][j] - us[i][j]) * dxi //
-                        + (vs[i][j + 1] - vs[i][j]) * dyi);
+                p[i][j] = pv.get(n - 1);
             }
         }
-        DMatrixRMaj p = new DMatrixRMaj(nx * ny, 1);
-        CommonOps_DSCC.solve(laplacian, new DMatrixRMaj(r), p);
+
+        // do the corrector step
+
+        for (int j = jmin; j <= jmax; j++) {
+            for (int i = imin + 1; i <= imax; i++) {
+                u[i][j] = us[i][j] - dt / rho * (p[i][j] - p[i - 1][j]) * dxi;
+            }
+        }
+        for (int j = jmin + 1; j <= jmax; j++) {
+            for (int i = imin; i <= imax; i++) {
+                v[i][j] = vs[i][j] - dt / rho * (p[i][j] - p[i][j - 1]) * dyi;
+            }
+        }
+
     }
 
     public static void main(String[] args) {
-        new Mesh(5, 6, 10, 20, 1.0, 1, 1).run();
     }
 
 }
