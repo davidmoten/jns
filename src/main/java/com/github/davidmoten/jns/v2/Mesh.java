@@ -51,6 +51,8 @@ public class Mesh {
     private final double dyi;
     private final double nu;
     private final double rho;
+    private final double[][] u;
+    private final double[][] v;
 
 //    % Index extents
 //    imin =2; imax=imin+nx−1;
@@ -114,6 +116,10 @@ public class Mesh {
         dy = y[jmin + 1] - y[jmin];
         dxi = 1 / dx;
         dyi = 1 / dy;
+        
+     // components of velocity
+        u = new double[nx + 2][ny + 2];
+        v = new double[nx + 2][ny + 2];
     }
 
     public void run(double[] uTop, double[] uBottom, double[] vLeft, double[] vRight, double dt) {
@@ -123,9 +129,6 @@ public class Mesh {
         Preconditions.checkArgument(vLeft.length == ly);
         Preconditions.checkArgument(vRight.length == ly);
 
-        // components of velocity
-        double[][] u = new double[nx + 2][ny + 2];
-        double[][] v = new double[nx + 2][ny + 2];
 
         // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
