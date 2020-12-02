@@ -1,5 +1,7 @@
 package com.github.davidmoten.jns.v2;
 
+import org.ejml.data.DMatrixSparseCSC;
+
 /**
  *
  * <p>
@@ -44,7 +46,8 @@ public class Mesh {
     private final double dxi;
     private final double dyi;
     private final double dt;
-    private double nu;
+    private final double nu;
+    private final double rho;
 
 //    % Index extents
 //    imin =2; imax=imin+nx−1;
@@ -68,13 +71,14 @@ public class Mesh {
 //        • The mesh sizes are precomputed to save computational cost. Additionally dxi = 1/dx and dyi = 1/dy
 //        are also precomputed since divisions are significantly more computationally expensive than multiplications.
 
-    public Mesh(int nx, int ny, double lx, double ly, double dt, double nu) {
+    public Mesh(int nx, int ny, double lx, double ly, double dt, double nu, double rho) {
         this.nx = nx;
         this.ny = ny;
         this.lx = lx;
         this.ly = ly;
         this.dt = dt;
         this.nu = nu;
+        this.rho = rho;
 
         this.imin = 1;
         this.imax = imin + nx - 1;
@@ -124,7 +128,7 @@ public class Mesh {
 
         // The convective and viscous terms in Eq. 4 are discretized using finite
         // differences which approximate the derivatives using neighboring values.
-        
+
         for (int j = jmin; j <= jmax; j++) {
             for (int i = imin + 1; i <= imax; i++) {
                 double vmiddle = 0.25 * (v[i - 1][j] + v[i - 1][j + 1] + v[i][j] + v[i][j + 1]);
@@ -149,10 +153,71 @@ public class Mesh {
             }
         }
 
+        ///////////////////////
+        // Poisson Equation //
+        ///////////////////////
+
+        // Solve Lp = R where L is the Laplacian operator
+
+        // Use EJML library
+        DMatrixSparseCSC laplacian = new DMatrixSparseCSC(nx * ny, nx * ny);
+
+        for (int j = 1; j <= ny; j++) {
+            for (int i = 1; i <= nx; i++) {
+                laplacian.set( //
+                        i + (j - 1) * nx - 1, //
+                        i + (j - 1) * nx - 1, 2 * dxi * dxi + 2 * dyi * dyi);
+                for (int ii = i - 1; ii <= i + 1; ii += 2) {
+                    if (ii > 0 && ii < nx) {
+                        laplacian.set( //
+                                i + (j - 1) * nx - 1, //
+                                ii + (j - 1) * nx - 1, //
+                                -dxi * dxi);
+                    } else { // Neuman conditions on the boundary
+                        laplacian.set( //
+                                i + (j - 1) * nx - 1, //
+                                i + (j - 1) * nx - 1, //
+                                laplacian.get( //
+                                        i + (j - 1) * nx - 1, //
+                                        i + (j - 1) * nx - 1) //
+                                        - dxi * dxi);
+                    }
+                }
+
+                for (int jj = j - 1; jj <= j + 1; jj += 2) {
+                    if (jj > 0 && jj < ny) {
+                        laplacian.set( //
+                                i + (j - 1) * nx - 1, //
+                                i + (jj - 1) * nx - 1, //
+                                -dyi * dyi);
+                    } else { // Neuman conditions on the boundary
+                        laplacian.set( //
+                                i + (j - 1) * nx - 1, //
+                                i + (j - 1) * nx - 1, //
+                                laplacian.get( //
+                                        i + (j - 1) * nx - 1, //
+                                        i + (j - 1) * nx - 1) //
+                                        - dyi * dyi);
+                    }
+                }
+            }
+        }
+
+        double[] r = new double[nx * ny];
+        int n = 0;
+        for (int j = jmin; j <= jmax; j++) {
+            for (int i = imin; i <= imax; i++) {
+                n++;
+                r[n - 1] = -rho / dt * ( //
+                (us[i + 1][j] - us[i][j]) * dxi //
+                        + (vs[i][j + 1] - vs[i][j]) * dyi);
+            }
+        }
+
     }
 
     public static void main(String[] args) {
-        new Mesh(5, 6, 10, 20, 1.0, 1).run();
+        new Mesh(5, 6, 10, 20, 1.0, 1, 1).run();
     }
 
 }
