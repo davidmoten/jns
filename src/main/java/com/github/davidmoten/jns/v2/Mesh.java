@@ -111,7 +111,8 @@ public class Mesh {
     }
 
     public void run() {
-        // discretize u and v components
+
+        // components of velocity
         double[][] u = new double[nx + 2][ny + 2];
         double[][] v = new double[nx + 2][ny + 2];
 
@@ -121,6 +122,9 @@ public class Mesh {
         // vstart is intermediate v till pressure correction happens
         double[][] vs = new double[nx + 2][ny + 2];
 
+        // The convective and viscous terms in Eq. 4 are discretized using finite
+        // differences which approximate the derivatives using neighboring values.
+        
         for (int j = jmin; j <= jmax; j++) {
             for (int i = imin + 1; i <= imax; i++) {
                 double vmiddle = 0.25 * (v[i - 1][j] + v[i - 1][j + 1] + v[i][j] + v[i][j + 1]);
