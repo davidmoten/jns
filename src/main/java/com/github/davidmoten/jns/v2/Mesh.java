@@ -78,7 +78,7 @@ public class Mesh {
 
     public Mesh(int nx, int ny, double lx, double ly, double nu, double rho, double[][] initialU,
             double[][] initialV) {
-        //TODO do a more comprehensive check
+        // TODO do a more comprehensive check
         checkSize(initialU, lx, ly);
         checkSize(initialV, lx, ly);
         this.nx = nx;
@@ -124,19 +124,13 @@ public class Mesh {
         // components of velocity
         u = new double[nx + 2][ny + 2];
         v = new double[nx + 2][ny + 2];
-        
-        for (int i=imin; i<=imax; i++) {
-            for (int j = jmin; j<=jmax; j++) {
+
+        // copy initial u and v to u and v arrays (extended with boundary)
+        for (int i = imin; i <= imax; i++) {
+            for (int j = jmin; j <= jmax; j++) {
                 u[i][j] = initialU[i - imin][j - jmin];
                 v[i][j] = initialV[i - imin][j - jmin];
             }
-        }
-    }
-
-    private static void checkSize(double[][] matrix, double lx, double ly) {
-        Preconditions.checkArgument(matrix.length == lx);
-        for (int i = 0; i< matrix.length; i++) {
-            Preconditions.checkArgument(matrix[i].length == ly);
         }
     }
 
@@ -200,6 +194,8 @@ public class Mesh {
 
         // Use EJML library
         DMatrixSparseCSC laplacian = new DMatrixSparseCSC(nx * ny, nx * ny);
+        
+        // fill the laplacian matrix
 
         for (int j = 1; j <= ny; j++) {
             for (int i = 1; i <= nx; i++) {
@@ -280,6 +276,13 @@ public class Mesh {
             }
         }
 
+    }
+
+    private static void checkSize(double[][] matrix, double lx, double ly) {
+        Preconditions.checkArgument(matrix.length == lx);
+        for (int i = 0; i < matrix.length; i++) {
+            Preconditions.checkArgument(matrix[i].length == ly);
+        }
     }
 
     public static void main(String[] args) {
