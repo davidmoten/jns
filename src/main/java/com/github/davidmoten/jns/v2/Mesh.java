@@ -1,6 +1,10 @@
 package com.github.davidmoten.jns.v2;
 
+import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.DMatrixSparseCSC;
+import org.ejml.data.Matrix;
+import org.ejml.interfaces.linsol.LinearSolverSparse;
+import org.ejml.sparse.csc.CommonOps_DSCC;
 
 /**
  *
@@ -213,7 +217,8 @@ public class Mesh {
                         + (vs[i][j + 1] - vs[i][j]) * dyi);
             }
         }
-
+        DMatrixRMaj p = new DMatrixRMaj(nx * ny, 1);
+        CommonOps_DSCC.solve(laplacian, new DMatrixRMaj(r), p);
     }
 
     public static void main(String[] args) {
