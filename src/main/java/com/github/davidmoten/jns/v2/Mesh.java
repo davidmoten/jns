@@ -37,6 +37,9 @@ public class Mesh {
     private final double[] x;
     private final double[] y;
 
+    private final double[] xm; // middles of x positions
+    private final double[] ym; // middles of y positions
+
 //    % Index extents
 //    imin =2; imax=imin+nx−1;
 //    jmin =2; jmax=jmin+ny−1;
@@ -65,22 +68,38 @@ public class Mesh {
         this.lx = lx;
         this.ly = ly;
 
-        this.imin = 2;
+        this.imin = 1;
         this.imax = imin + nx - 1;
-        this.jmin = 2;
+        this.jmin = 1;
         this.jmax = jmin + ny - 1;
 
-        this.x = new double[nx + 1];
-        this.y = new double[ny + 1];
+        // make arrays one cell bigger for boundary stuff
+        this.x = new double[nx + 2];
+        this.y = new double[ny + 2];
 
-        for (int i = 1; i <= nx; i++) {
+        for (int i = imin; i <= imax + 1; i++) {
             x[i] = (i - 1) * (lx / nx);
         }
 
-        for (int i = 1; i <= ny; i++) {
-            y[i] = (i - 1) * (ly / ny);
+        for (int j = jmin; j <= jmax + 1; j++) {
+            y[j] = (j - 1) * (ly / ny);
         }
 
+        xm = new double[nx + 1];
+        ym = new double[ny + 1];
+
+        for (int i = imin; i <= imax; i++) {
+            xm[i] = (x[i] + x[i + 1]) / 2;
+        }
+
+        for (int j = jmin; j <= jmax; j++) {
+            ym[j] = (y[j] + y[j + 1]) / 2;
+        }
+
+    }
+    
+    public static void main(String[] args) {
+        new Mesh(5, 6, 10, 20);
     }
 
 }
