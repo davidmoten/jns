@@ -114,7 +114,12 @@ public class Mesh {
         // discretize u and v components
         double[][] u = new double[nx + 2][ny + 2];
         double[][] v = new double[nx + 2][ny + 2];
+
+        // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
+
+        // vstart is intermediate v till pressure correction happens
+        double[][] vs = new double[nx + 2][ny + 2];
 
         for (int j = jmin; j <= jmax; j++) {
             for (int i = imin + 1; i <= imax; i++) {
@@ -125,7 +130,18 @@ public class Mesh {
                 double dudy = (u[i][j + 1] - u[i][j - 1]) / 2 / dy;
                 us[i][j] = u[i][j]
                         + dt * (nu * (d2udx2 + d2udy2) - (u[i][j] * dudx + vmiddle * dudy));
+            }
+        }
 
+        for (int j = jmin + 1; j <= jmax; j++) {
+            for (int i = imin; i <= imax; i++) {
+                double umiddle = 0.25 * (u[i - 1][j] + u[i - 1][j + 1] + u[i][j] + u[i][j + 1]);
+                double d2vdx2 = (v[i - 1][j] - 2 * v[i][j] + v[i + 1][j]) / dx / dx;
+                double d2vdy2 = (v[i][j - 1] - 2 * v[i][j] + v[i][j + 1]) / dy / dy;
+                double dvdx = (v[i + 1][j] - v[i - 1][j]) / 2 / dx;
+                double dvdy = (v[i][j + 1] - v[i][j - 1]) / 2 / dy;
+                vs[i][j] = v[i][j]
+                        + dt * (nu * (d2vdx2 + d2vdy2) - (u[i][j] * dvdx + umiddle * dvdy));
             }
         }
 
