@@ -140,7 +140,8 @@ public class Mesh {
         }
     }
 
-    public void run(double[] uTop, double[] uBottom, double[] vLeft, double[] vRight, double dt) {
+    public void run(double[] uTop, double vTop[], double[] uBottom, double[] vBottom,
+            double uLeft[], double[] vLeft, double uRight[], double[] vRight, double dt) {
 
         Preconditions.checkArgument(uTop == null || uTop.length == lx);
         Preconditions.checkArgument(uBottom == null || uBottom.length == lx);
@@ -160,9 +161,13 @@ public class Mesh {
         for (int i = imin - 1; i <= imax + 1; i++) {
             u[i][jmin - 1] = uBottom == null ? 0 : u[i][jmin] - 2 * (u[i][jmin] - uBottom[i]);
             u[i][jmax + 1] = uTop == null ? 0 : u[i][jmax] - 2 * (u[i][jmax] - uTop[i]);
+            v[i][jmin - 1] = vBottom == null ? 0 : v[i][jmin] - 2 * (v[i][jmin] - vBottom[i]);
+            u[i][jmax + 1] = vTop == null ? 0 : v[i][jmax] - 2 * (v[i][jmax] - vTop[i]);
         }
 
         for (int j = jmin - 1; j <= jmax + 1; j++) {
+            u[imin - 1][j] = uLeft == null ? 0 : u[imin][j] - 2 * (u[imin][j] - uLeft[j]);
+            u[imax + 1][j] = uRight == null ? 0 : u[imax][j] - 2 * (u[imax][j] - uRight[j]);
             v[imin - 1][j] = vLeft == null ? 0 : v[imin][j] - 2 * (v[imin][j] - vLeft[j]);
             v[imax + 1][j] = vRight == null ? 0 : v[imax][j] - 2 * (v[imax][j] - vRight[j]);
         }
@@ -330,7 +335,8 @@ public class Mesh {
 
     public static void main(String[] args) {
         Mesh mesh = new Mesh(32, 32, 1, 1, 0.00109, 1.025);
-        mesh.run(null, null, null, null, 1);
+        mesh.run(null, null, null, null, null, null, null, null, 1);
+        System.out.println("finished");
     }
 
 }
