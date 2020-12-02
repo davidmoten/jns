@@ -49,8 +49,8 @@ public class Mesh {
     private final double dy;
     private final double dxi;
     private final double dyi;
-    private final double nu;
-    private final double rho;
+    private final double nu; // viscosity of liquid, 0.00109 for seawater at 20C
+    private final double rho; // density of liquid, 1.025 kg/l for seawater at 20C
     private final double[][] u;
     private final double[][] v;
 
@@ -75,6 +75,10 @@ public class Mesh {
 //        to enforce boundary conditions (more on this later).
 //        • The mesh sizes are precomputed to save computational cost. Additionally dxi = 1/dx and dyi = 1/dy
 //        are also precomputed since divisions are significantly more computationally expensive than multiplications.
+
+    public Mesh(int nx, int ny, double lx, double ly, double nu, double rho) {
+        this(nx, ny, lx, ly, nu, rho, null, null);
+    }
 
     public Mesh(int nx, int ny, double lx, double ly, double nu, double rho, double[][] initialU,
             double[][] initialV) {
@@ -128,18 +132,20 @@ public class Mesh {
         // copy initial u and v to u and v arrays (extended with boundary)
         for (int i = imin; i <= imax; i++) {
             for (int j = jmin; j <= jmax; j++) {
-                u[i][j] = initialU[i - imin][j - jmin];
-                v[i][j] = initialV[i - imin][j - jmin];
+                if (initialU != null)
+                    u[i][j] = initialU[i - imin][j - jmin];
+                if (initialV != null)
+                    v[i][j] = initialV[i - imin][j - jmin];
             }
         }
     }
 
     public void run(double[] uTop, double[] uBottom, double[] vLeft, double[] vRight, double dt) {
 
-        Preconditions.checkArgument(uTop.length == lx);
-        Preconditions.checkArgument(uBottom.length == lx);
-        Preconditions.checkArgument(vLeft.length == ly);
-        Preconditions.checkArgument(vRight.length == ly);
+        Preconditions.checkArgument(uTop == null || uTop.length == lx);
+        Preconditions.checkArgument(uBottom == null || uBottom.length == lx);
+        Preconditions.checkArgument(vLeft == null || vLeft.length == ly);
+        Preconditions.checkArgument(vRight == null || vRight.length == ly);
 
         // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
@@ -147,20 +153,24 @@ public class Mesh {
         // vstart is intermediate v till pressure correction happens
         double[][] vs = new double[nx + 2][ny + 2];
 
+        //////////////////////////////
         // apply boundary conditions
+        //////////////////////////////
 
         for (int i = imin - 1; i <= imax + 1; i++) {
-            u[i][jmin - 1] = u[i][jmin] - 2 * (u[i][jmin] - uBottom[i]);
-            u[i][jmax + 1] = u[i][jmax] - 2 * (u[i][jmax] - uTop[i]);
+            u[i][jmin - 1] = uBottom == null ? 0 : u[i][jmin] - 2 * (u[i][jmin] - uBottom[i]);
+            u[i][jmax + 1] = uTop == null ? 0 : u[i][jmax] - 2 * (u[i][jmax] - uTop[i]);
         }
 
         for (int j = jmin - 1; j <= jmax + 1; j++) {
-            v[imin - 1][j] = v[imin][j] - 2 * (v[imin][j] - vLeft[j]);
-            v[imax + 1][j] = v[imax][j] - 2 * (v[imax][j] - vRight[j]);
+            v[imin - 1][j] = vLeft == null ? 0 : v[imin][j] - 2 * (v[imin][j] - vLeft[j]);
+            v[imax + 1][j] = vRight == null ? 0 : v[imax][j] - 2 * (v[imax][j] - vRight[j]);
         }
 
+        //////////////////////////////////////////////////////////////////////////////
         // The convective and viscous terms in Eq. 4 are discretized using finite
         // differences which approximate the derivatives using neighboring values.
+        //////////////////////////////////////////////////////////////////////////////
 
         for (int j = jmin; j <= jmax; j++) {
             for (int i = imin + 1; i <= imax; i++) {
@@ -186,17 +196,16 @@ public class Mesh {
             }
         }
 
-        ///////////////////////
-        // Poisson Equation //
-        ///////////////////////
+        ////////////////////////////
+        // Solve Poisson Equation //
+        ////////////////////////////
 
         // Solve Lp = R where L is the Laplacian operator
 
         // Use EJML library
         DMatrixSparseCSC laplacian = new DMatrixSparseCSC(nx * ny, nx * ny);
-        
-        // fill the laplacian matrix
 
+        // fill the laplacian matrix
         for (int j = 1; j <= ny; j++) {
             for (int i = 1; i <= nx; i++) {
                 laplacian.set( //
@@ -238,6 +247,7 @@ public class Mesh {
             }
         }
 
+        // calculate pressure as a long vector
         DMatrixRMaj pv = new DMatrixRMaj(nx * ny, 1);
         {
             double[] r = new double[nx * ny];
@@ -259,26 +269,59 @@ public class Mesh {
         for (int i = imin; i <= imax; i++) {
             for (int j = jmin; j <= jmax; j++) {
                 n++;
-                p[i][j] = pv.get(n - 1);
+                p[i - imin][j - jmin] = pv.get(n - 1);
             }
         }
 
-        // do the corrector step
+        ///////////////////////////////////////
+        // Perform pressure correction
+        ///////////////////////////////////////
 
         for (int j = jmin; j <= jmax; j++) {
             for (int i = imin + 1; i <= imax; i++) {
-                u[i][j] = us[i][j] - dt / rho * (p[i][j] - p[i - 1][j]) * dxi;
+                u[i][j] = us[i][j]
+                        - dt / rho * (p[i - imin][j - jmin] - p[i - imin - 1][j - jmin]) * dxi;
             }
         }
         for (int j = jmin + 1; j <= jmax; j++) {
             for (int i = imin; i <= imax; i++) {
-                v[i][j] = vs[i][j] - dt / rho * (p[i][j] - p[i][j - 1]) * dyi;
+                v[i][j] = vs[i][j]
+                        - dt / rho * (p[i - imin][j - jmin] - p[i - imin][j - jmin - 1]) * dyi;
             }
         }
 
     }
 
+    /**
+     * Returns u (x-axis) component of velocity at left side of cell.
+     * 
+     * @param i one-based x-axis index
+     * @param j one-based y-axis index
+     * @return u (x-axis) component of velocity at cell
+     */
+    public double u(int i, int j) {
+        Preconditions.checkArgument(i >= imin && i <= imax);
+        Preconditions.checkArgument(j >= jmin && i <= jmax);
+        return u[i][j];
+    }
+
+    /**
+     * Returns v (y-axis) component of velocity at bottom of cell.
+     * 
+     * @param i one-based x-axis index
+     * @param j one-based y-axis index
+     * @return v (y-axis) component of velocity at cell
+     */
+    public double v(int i, int j) {
+        Preconditions.checkArgument(i >= imin && i <= imax);
+        Preconditions.checkArgument(j >= jmin && i <= jmax);
+        return v[i][j];
+    }
+
     private static void checkSize(double[][] matrix, double lx, double ly) {
+        if (matrix == null) {
+            return;
+        }
         Preconditions.checkArgument(matrix.length == lx);
         for (int i = 0; i < matrix.length; i++) {
             Preconditions.checkArgument(matrix[i].length == ly);
@@ -286,6 +329,8 @@ public class Mesh {
     }
 
     public static void main(String[] args) {
+        Mesh mesh = new Mesh(32, 32, 1, 1, 0.00109, 1.025);
+        mesh.run(null, null, null, null, 1);
     }
 
 }
