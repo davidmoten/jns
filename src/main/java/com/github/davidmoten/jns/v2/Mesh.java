@@ -33,8 +33,6 @@ public class Mesh {
 
     private final int nx;
     private final int ny;
-    private final double lx; // length of mesh in x direction
-    private final double ly; // length of mesh in y direction
     private final int imin;
     private final int imax;
     private final int jmin;
@@ -87,8 +85,6 @@ public class Mesh {
         checkSize(initialV, lx, ly);
         this.nx = nx;
         this.ny = ny;
-        this.lx = lx;
-        this.ly = ly;
         this.nu = nu;
         this.rho = rho;
 
@@ -139,14 +135,14 @@ public class Mesh {
             }
         }
     }
-
+ 
     public void run(double[] uTop, double vTop[], double[] uBottom, double[] vBottom,
             double uLeft[], double[] vLeft, double uRight[], double[] vRight, double dt) {
 
-        Preconditions.checkArgument(uTop == null || uTop.length == lx);
-        Preconditions.checkArgument(uBottom == null || uBottom.length == lx);
-        Preconditions.checkArgument(vLeft == null || vLeft.length == ly);
-        Preconditions.checkArgument(vRight == null || vRight.length == ly);
+        Preconditions.checkArgument(uTop == null || uTop.length == nx);
+        Preconditions.checkArgument(uBottom == null || uBottom.length == nx);
+        Preconditions.checkArgument(vLeft == null || vLeft.length == ny);
+        Preconditions.checkArgument(vRight == null || vRight.length == ny);
 
         // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
@@ -332,10 +328,18 @@ public class Mesh {
             Preconditions.checkArgument(matrix[i].length == ly);
         }
     }
+    
+    private static double[] array(double value, int length) {
+        double[] a = new double[length];
+        for (int i=0; i< length; i++) {
+            a[i] = value;
+        }
+        return a;
+    }
 
     public static void main(String[] args) {
         Mesh mesh = new Mesh(32, 32, 1, 1, 0.00109, 1.025);
-        mesh.run(null, null, null, null, null, null, null, null, 1);
+        mesh.run(array(1.0 , 32), null, null, null, null, null, null, null, 1);
         System.out.println("finished");
     }
 
