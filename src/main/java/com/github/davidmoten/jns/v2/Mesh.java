@@ -359,7 +359,7 @@ public class Mesh {
     public static void main(String[] args) {
         int size = 32;
         Mesh mesh = new Mesh(size, size, 1, 1, 0.00109, 1.025);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             mesh.run(array(1.0, size + 2), null, null, null, null, null, null, null, 1);
             System.out.println(mesh);
         }
