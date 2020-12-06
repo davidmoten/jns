@@ -1,5 +1,7 @@
 package com.github.davidmoten.jns.v2;
 
+import java.text.DecimalFormat;
+
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.DMatrixSparseCSC;
 import org.ejml.sparse.csc.CommonOps_DSCC;
@@ -135,14 +137,15 @@ public class Mesh {
             }
         }
     }
- 
+
     public void run(double[] uTop, double vTop[], double[] uBottom, double[] vBottom,
             double uLeft[], double[] vLeft, double uRight[], double[] vRight, double dt) {
 
-        Preconditions.checkArgument(uTop == null || uTop.length == nx);
-        Preconditions.checkArgument(uBottom == null || uBottom.length == nx);
-        Preconditions.checkArgument(vLeft == null || vLeft.length == ny);
-        Preconditions.checkArgument(vRight == null || vRight.length == ny);
+        Preconditions.checkArgument(uTop == null || uTop.length == nx + 2);
+        Preconditions.checkArgument(uBottom == null || uBottom.length == nx + 2);
+        Preconditions.checkArgument(vLeft == null || vLeft.length == ny + 2);
+        Preconditions.checkArgument(vRight == null || vRight.length == ny + 2);
+        // TODO check corners coincide
 
         // ustar is intermediate u till pressure correction happens
         double[][] us = new double[nx + 2][ny + 2];
@@ -318,6 +321,22 @@ public class Mesh {
         Preconditions.checkArgument(j >= jmin && i <= jmax);
         return v[i][j];
     }
+    
+    @Override
+    public String toString() {
+        DecimalFormat df = new DecimalFormat("0.000");
+        StringBuilder b = new StringBuilder();
+        for (int i = 1; i <= nx; i++) {
+            for (int j= 1; j <= ny; j++) {
+                if (j>1) {
+                    b.append(" ");
+                }
+                b.append(df.format(u(i, j)) + "," + df.format(v(i,j)));
+            }
+            b.append("\n");
+        }
+        return b.toString();
+    }
 
     private static void checkSize(double[][] matrix, double lx, double ly) {
         if (matrix == null) {
@@ -328,10 +347,10 @@ public class Mesh {
             Preconditions.checkArgument(matrix[i].length == ly);
         }
     }
-    
+
     private static double[] array(double value, int length) {
         double[] a = new double[length];
-        for (int i=0; i< length; i++) {
+        for (int i = 0; i < length; i++) {
             a[i] = value;
         }
         return a;
@@ -339,7 +358,8 @@ public class Mesh {
 
     public static void main(String[] args) {
         Mesh mesh = new Mesh(32, 32, 1, 1, 0.00109, 1.025);
-        mesh.run(array(1.0 , 32), null, null, null, null, null, null, null, 1);
+        mesh.run(array(1.0, 34), null, null, null, null, null, null, null, 1);
+        System.out.println(mesh);
         System.out.println("finished");
     }
 
