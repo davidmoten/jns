@@ -161,7 +161,7 @@ public class Mesh {
             u[i][jmin - 1] = uBottom == null ? 0 : u[i][jmin] - 2 * (u[i][jmin] - uBottom[i]);
             u[i][jmax + 1] = uTop == null ? 0 : u[i][jmax] - 2 * (u[i][jmax] - uTop[i]);
             v[i][jmin - 1] = vBottom == null ? 0 : v[i][jmin] - 2 * (v[i][jmin] - vBottom[i]);
-            u[i][jmax + 1] = vTop == null ? 0 : v[i][jmax] - 2 * (v[i][jmax] - vTop[i]);
+            v[i][jmax + 1] = vTop == null ? 0 : v[i][jmax] - 2 * (v[i][jmax] - vTop[i]);
         }
 
         for (int j = jmin - 1; j <= jmax + 1; j++) {
@@ -321,17 +321,17 @@ public class Mesh {
         Preconditions.checkArgument(j >= jmin && i <= jmax);
         return v[i][j];
     }
-    
+
     @Override
     public String toString() {
         DecimalFormat df = new DecimalFormat("0.000");
         StringBuilder b = new StringBuilder();
         for (int i = 1; i <= nx; i++) {
-            for (int j= 1; j <= ny; j++) {
-                if (j>1) {
+            for (int j = 1; j <= ny; j++) {
+                if (j > 1) {
                     b.append(" ");
                 }
-                b.append(df.format(u(i, j)) + "," + df.format(v(i,j)));
+                b.append(df.format(u(i, j)) + "," + df.format(v(i, j)));
             }
             b.append("\n");
         }
@@ -357,9 +357,12 @@ public class Mesh {
     }
 
     public static void main(String[] args) {
-        Mesh mesh = new Mesh(32, 32, 1, 1, 0.00109, 1.025);
-        mesh.run(array(1.0, 34), null, null, null, null, null, null, null, 1);
-        System.out.println(mesh);
+        int size = 32;
+        Mesh mesh = new Mesh(size, size, 1, 1, 0.00109, 1.025);
+        for (int i = 0; i < 5; i++) {
+            mesh.run(array(1.0, size + 2), null, null, null, null, null, null, null, 1);
+            System.out.println(mesh);
+        }
         System.out.println("finished");
     }
 
