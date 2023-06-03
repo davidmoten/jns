@@ -3,9 +3,9 @@ package com.github.davidmoten.jns.v3;
 import com.github.davidmoten.guavamini.Preconditions;
 
 public class Solver {
-    
+
     public static final double FLUID_DENSITY = 1.025; // density of sea water
-    
+
     // All variables are in SI units
     private int gridSizeX; // Size of the grid in the X-direction
     private int gridSizeY; // Size of the grid in the Y-direction
@@ -45,12 +45,12 @@ public class Solver {
         v = new double[gridSizeX][gridSizeY][gridSizeZ];
         w = new double[gridSizeX][gridSizeY][gridSizeZ];
         p = new double[gridSizeX][gridSizeY][gridSizeZ];
-        
+
         uNext = new double[gridSizeX][gridSizeY][gridSizeZ];
         vNext = new double[gridSizeX][gridSizeY][gridSizeZ];
         wNext = new double[gridSizeX][gridSizeY][gridSizeZ];
         pNext = new double[gridSizeX][gridSizeY][gridSizeZ];
-        
+
         obstacle = new boolean[gridSizeX][gridSizeY][gridSizeZ];
         depth = depths;
     }
@@ -83,11 +83,12 @@ public class Solver {
         v = vNext;
         w = wNext;
         p = pNext;
+        applyPressureCorrection();
     }
 
     // Calculate the next-step velocity of a single cell
     private void calculateNextStepVelocityCell(int i, int j, int k, double currentTime) {
-        
+
         // Retrieve the velocity components and depth of the cell
         double ui = u[i][j][k];
         double vi = v[i][j][k];
@@ -115,7 +116,7 @@ public class Solver {
         // Retrieve the tidal forcing values at the current time step
         double tidalForcingX = this.tidalForcingX.get(i, j, k, currentTime);
         double tidalForcingY = this.tidalForcingY.get(i, j, k, currentTime);
-        
+
         // Compute the next-step velocities using the Navier-Stokes equations with tidal
         // forcing
         double next_u = ui
@@ -132,7 +133,7 @@ public class Solver {
         vNext[i][j][k] = next_v;
         wNext[i][j][k] = next_w;
     }
-    
+
     // Calculate the next-step pressure of a single cell
     private void calculateNextStepPressureCell(int i, int j, int k) {
         // Retrieve the velocity components and pressure of the neighboring cells
@@ -154,15 +155,47 @@ public class Solver {
         double deltaZPlus = (depth[k + 1] - currentDepth) / 2.0;
         double deltaZMinus = (currentDepth - depth[k - 1]) / 2.0;
         double deltaZ = deltaZPlus + deltaZMinus;
-        
+
         // Compute the next-step pressure using the Poisson equation
-        double next_p = ((pEast + pWest) / Math.pow(deltaX, 2) +
-                         (pNorth + pSouth) / Math.pow(deltaY, 2) +
-                         (pUp + pDown) / Math.pow(deltaZ, 2) -
-                         ((uEast - uWest) / deltaX + (vNorth - vSouth) / deltaY + (wUp - wDown) / deltaZ) / timeStep) /
-                        (2 / (Math.pow(deltaX, 2)) + 2 / (Math.pow(deltaY, 2)) + 2 / (Math.pow(deltaZ, 2)));
+        double next_p = ((pEast + pWest) / Math.pow(deltaX, 2) + (pNorth + pSouth) / Math.pow(deltaY, 2)
+                + (pUp + pDown) / Math.pow(deltaZ, 2)
+                - ((uEast - uWest) / deltaX + (vNorth - vSouth) / deltaY + (wUp - wDown) / deltaZ) / timeStep)
+                / (2 / (Math.pow(deltaX, 2)) + 2 / (Math.pow(deltaY, 2)) + 2 / (Math.pow(deltaZ, 2)));
 
         // Update the pressure of the cell
         pNext[i][j][k] = next_p;
+    }
+    
+ // Calculate the pressure correction using the pressure correction method
+    public void applyPressureCorrection() {
+        // Compute the pressure correction for the entire grid
+        for (int i = 1; i < gridSizeX - 1; i++) {
+            for (int j = 1; j < gridSizeY - 1; j++) {
+                for (int k = 1; k < gridSizeZ - 1; k++) {
+                    if (!obstacle[i][j][k]) {
+                        applyPressureCorrection(i, j, k);
+                    }
+                }
+            }
+        }
+    }
+
+    
+    private void applyPressureCorrection(int i, int j, int k) {
+        // Retrieve the pressure of the neighboring cells
+        double pEast = p[i + 1][j][k];
+        double pWest = p[i - 1][j][k];
+        double pNorth = p[i][j + 1][k];
+        double pSouth = p[i][j - 1][k];
+        double pUp = p[i][j][k + 1];
+        double pDown = p[i][j][k - 1];
+        double deltaZ = (depth[k + 1] - depth[k - 1]) / 2;
+
+        // Compute the pressure correction using the pressure correction equation
+        double pressureCorrection = (pEast - pWest) / (2 * deltaX) + (pNorth - pSouth) / (2 * deltaY)
+                + (pUp - pDown) / (2 * deltaZ);
+
+        // Apply the pressure correction to the velocity field
+        u[i][j][k] -= (pressureCorrection * timeStep) / fluidDensity;
     }
 }
