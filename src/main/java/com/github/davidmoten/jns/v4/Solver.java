@@ -1,22 +1,27 @@
 package com.github.davidmoten.jns.v4;
 
 /**
- * Navier Stokes solver for incompressible fluid using Chorin's method.
+ * Navier Stokes solver for incompressible fluid using Chorin's method. Created
+ * via conversation with ChatGPT 3 so take with large grain of salt!
  *
  */
 public class Solver {
+
+    private static final double seawaterDensity = 1025.0; // kg/m³
+    private static final double viscosity = 1.02;
+    private static final double gravity = 9.81; // m/s²
+
     private static final double dt = 0.01; // time step
     private double dx; // grid spacing in x-direction
     private double dy; // grid spacing in y-direction
     private double[] dz; // grid spacing in z-direction
 
-    // TODO use viscosity coefficient
-    // private static final double viscosity = 0.1;
 
     private double[][][] u; // x-velocity component
     private double[][][] v; // y-velocity component
     private double[][][] w; // z-velocity component
     private double[][][] p; // pressure
+    private boolean[][][] obstacle; // obstacles
 
     private int nx; // grid size in x-direction
     private int ny; // grid size in y-direction
@@ -28,14 +33,16 @@ public class Solver {
     private double[][][] vNext; // y-velocity component
     private double[][][] wNext; // z-velocity component
     private double[][][] pNext; // pressure
+    private double[] depth;
 
-    public Solver(int nx, int ny, int nz, double dx, double dy, double[] dz) {
+    public Solver(int nx, int ny, int nz, double dx, double dy, double[] dz, boolean[][][] obstacle) {
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
+        this.obstacle = obstacle;
 
         u = new double[nx][ny][nz];
         v = new double[nx][ny][nz];
@@ -48,9 +55,18 @@ public class Solver {
         pNext = new double[nx][ny][nz];
 
         div = new double[nx][ny][nz];
+
+        depth = new double[nz];
+        double sum = 0;
+        for (int i = 0; i < nz; i++) {
+            depth[i] = sum;
+            sum += dz[i];
+        }
     }
 
     public void solve() {
+        setObstaclePressureToAverageOfNeighbours();
+
         // Perform velocity advection and store in next
         advect(u, uNext);
         advect(v, vNext);
@@ -60,28 +76,103 @@ public class Solver {
         computeDivergence(uNext, vNext, wNext, div);
 
         // Perform pressure projection and store in pNext
-        project(p, div, pNext);
+        projectPressure(p, div, pNext);
 
-        // swap p and pNext
-        double[][][] temp = p;
-        p = pNext;
-        pNext = temp;
+        swapPressures();
 
         // Subtract the pressure gradient and store in u, v, w
         subtractPressureGradient(uNext, p, u);
         subtractPressureGradient(vNext, p, v);
         subtractPressureGradient(wNext, p, w);
+
+        // Apply viscosity again after pressure projection
+        applyViscosity(u, uNext);
+        applyViscosity(v, vNext);
+        applyViscosity(w, wNext);
+
+        swapVelocities();
+    }
+
+    private void swapPressures() {
+        // swap p and pNext
+        double[][][] temp = p;
+        p = pNext;
+        pNext = temp;
+    }
+
+    private void swapVelocities() {
+        double[][][] temp;
+
+        temp = uNext;
+        uNext = u;
+        u = temp;
+
+        temp = vNext;
+        vNext = v;
+        v = temp;
+
+        temp = wNext;
+        wNext = w;
+        w = temp;
+    }
+
+    private void applyViscosity(double[][][] field, double[][][] result) {
+        for (int i = 1; i < nx - 1; i++) {
+            for (int j = 1; j < ny - 1; j++) {
+                for (int k = 1; k < nz - 1; k++) {
+                    double du2dx = (field[i + 1][j][k] - 2 * field[i][j][k] + field[i - 1][j][k]) / (dx * dx);
+                    double du2dy = (field[i][j + 1][k] - 2 * field[i][j][k] + field[i][j - 1][k]) / (dy * dy);
+                    double du2dz = (field[i][j][k + 1] - 2 * field[i][j][k] + field[i][j][k - 1]) / (dz[k] * dz[k]);
+                    result[i][j][k] = field[i][j][k] + viscosity * dt * (du2dx + du2dy + du2dz);
+                }
+            }
+        }
+    }
+
+    private void setObstaclePressureToAverageOfNeighbours() {
+        for (int i = 1; i < nx - 1; i++) {
+            for (int j = 1; j < ny - 1; j++) {
+                for (int k = 1; k < nz - 1; k++) {
+                    if (obstacle[i][j][k]) {
+                        p[i][j][k] = averageOfNeighboringPressure(i, j, k);
+                    }
+                }
+            }
+        }
     }
 
     private void advect(double[][][] field, double[][][] result) {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
-                    double x = i - dt * u[i][j][k] / dx;
-                    double y = j - dt * v[i][j][k] / dy;
-                    double z = k - dt * w[i][j][k] / dz[k];
+                    if (!obstacle[i][j][k]) {
+                        double x = i - dt * u[i][j][k] / dx;
+                        double y = j - dt * v[i][j][k] / dy;
+                        double z = k - dt * w[i][j][k] / dz[k];
 
-                    result[i][j][k] = trilinearInterpolate(field, x, y, z);
+                        double interpolatedValue = trilinearInterpolate(field, x, y, z);
+
+                        // Calculate the second-order derivatives for viscosity
+                        double d2udx2 = (u[i + 1][j][k] - 2 * u[i][j][k] + u[i - 1][j][k]) / (dx * dx);
+                        double d2udy2 = (u[i][j + 1][k] - 2 * u[i][j][k] + u[i][j - 1][k]) / (dy * dy);
+                        double d2udz2 = (u[i][j][k + 1] - 2 * u[i][j][k] + u[i][j][k - 1]) / (dz[k] * dz[k]);
+
+                        double d2vdx2 = (v[i + 1][j][k] - 2 * v[i][j][k] + v[i - 1][j][k]) / (dx * dx);
+                        double d2vdy2 = (v[i][j + 1][k] - 2 * v[i][j][k] + v[i][j - 1][k]) / (dy * dy);
+                        double d2vdz2 = (v[i][j][k + 1] - 2 * v[i][j][k] + v[i][j][k - 1]) / (dz[k] * dz[k]);
+
+                        double d2wdx2 = (w[i + 1][j][k] - 2 * w[i][j][k] + w[i - 1][j][k]) / (dx * dx);
+                        double d2wdy2 = (w[i][j + 1][k] - 2 * w[i][j][k] + w[i][j - 1][k]) / (dy * dy);
+                        double d2wdz2 = (w[i][j][k + 1] - 2 * w[i][j][k] + w[i][j][k - 1]) / (dz[k] * dz[k]);
+
+                        // Apply advection with viscosity
+                        result[i][j][k] = interpolatedValue
+                                - dt * (u[i][j][k] * (interpolatedValue - trilinearInterpolate(u, x, y, z)) / dx
+                                        + v[i][j][k] * (interpolatedValue - trilinearInterpolate(v, x, y, z)) / dy
+                                        + w[i][j][k] * (interpolatedValue - trilinearInterpolate(w, x, y, z)) / dz[k])
+                                + dt * viscosity * (d2udx2 + d2udy2 + d2udz2 + d2vdx2 + d2vdy2 + d2vdz2 + d2wdx2
+                                        + d2wdy2 + d2wdz2);
+                    }
                 }
             }
         }
@@ -106,8 +197,7 @@ public class Solver {
                         + dy1 * (dz0 * field[i + 1][j + 1][k] + dz1 * field[i + 1][j + 1][k + 1]));
     }
 
-    private double[][][] computeDivergence(double[][][] u, double[][][] v, double[][][] w, double[][][] div) {
-
+    private void computeDivergence(double[][][] u, double[][][] v, double[][][] w, double[][][] div) {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
@@ -116,17 +206,17 @@ public class Solver {
                 }
             }
         }
-
-        return div;
     }
 
-    private void project(double[][][] p, double[][][] div, double[][][] result) {
+    private void projectPressure(double[][][] p, double[][][] div, double[][][] result) {
         for (int iter = 0; iter < 20; iter++) {
             for (int i = 1; i < nx - 1; i++) {
                 for (int j = 1; j < ny - 1; j++) {
                     for (int k = 1; k < nz - 1; k++) {
-                        result[i][j][k] = ((p[i + 1][j][k] + p[i - 1][j][k] + p[i][j + 1][k] + p[i][j - 1][k]
-                                + p[i][j][k + 1] + p[i][j][k - 1]) - div[i][j][k] * dx * dx) / 6.0;
+                        if (!obstacle[i][j][k]) {
+                            result[i][j][k] = ((p[i + 1][j][k] + p[i - 1][j][k] + p[i][j + 1][k] + p[i][j - 1][k]
+                                    + p[i][j][k + 1] + p[i][j][k - 1]) - div[i][j][k] * dx * dx) / 6.0;
+                        }
                     }
                 }
             }
@@ -137,12 +227,60 @@ public class Solver {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
-                    result[i][j][k] = field[i][j][k] - 0.5 * dt * (p[i + 1][j][k] - p[i - 1][j][k]) / dx
-                            - 0.5 * dt * (p[i][j + 1][k] - p[i][j - 1][k]) / dy
-                            - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / dz[k];
+                    if (!obstacle[i][j][k]) {
+                        result[i][j][k] = field[i][j][k] - 0.5 * dt * (p[i + 1][j][k] - p[i - 1][j][k]) / dx
+                                - 0.5 * dt * (p[i][j + 1][k] - p[i][j - 1][k]) / dy
+                                - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / dz[k];
+                    }
                 }
             }
         }
+    }
+
+    // Get the pressure value from neighboring obstacle cells
+    private double averageOfNeighboringPressure(int i, int j, int k) {
+        double pressureSum = 0.0;
+        int count = 0;
+
+        // Check the neighboring cells in the x, y, and z directions
+        for (int di = -1; di <= 1; di++) {
+            for (int dj = -1; dj <= 1; dj++) {
+                for (int dk = -1; dk <= 1; dk++) {
+                    // Exclude the current cell
+                    if (di == 0 && dj == 0 && dk == 0) {
+                        continue;
+                    }
+
+                    // Check if the neighboring cell is an obstacle
+                    int neighborI = i + di;
+                    int neighborJ = j + dj;
+                    int neighborK = k + dk;
+                    if (isObstacle(neighborI, neighborJ, neighborK)) {
+                        pressureSum += p[neighborI][neighborJ][neighborK];
+                        count++;
+                    }
+                }
+            }
+        }
+
+        // Return the average pressure of neighboring obstacle cells
+        if (count > 0) {
+            return pressureSum / count;
+        } else {
+            return seawaterDensity * gravity * depth[k]; // If no neighboring obstacle cells, set to the desired initial
+                                                         // pressure value
+        }
+    }
+
+    // Check if a cell is an obstacle
+    private boolean isObstacle(int i, int j, int k) {
+        // Perform boundary checks to avoid accessing out-of-bounds cells
+        if (i < 0 || i >= nx || j < 0 || j >= ny || k < 0 || k >= nz) {
+            return false; // Return false for out-of-bounds cells
+        }
+
+        // Return true if the cell is an obstacle
+        return obstacle[i][j][k];
     }
 
     public static void main(String[] args) {
@@ -154,12 +292,13 @@ public class Solver {
         double dx = 0.1; // grid spacing in x-direction
         double dy = 0.1; // grid spacing in y-direction
         double[] dz = new double[nz]; // grid spacing in z-direction
+
         // Initialize the variable depth spacing
         for (int k = 0; k < nz; k++) {
             dz[k] = 0.1 * (k + 1); // assuming linearly increasing spacing
         }
 
-        Solver solver = new Solver(nx, ny, nz, dx, dy, dz);
+        Solver solver = new Solver(nx, ny, nz, dx, dy, dz, new boolean[nx][ny][nz]);
         solver.solve();
     }
 }
