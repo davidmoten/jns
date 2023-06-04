@@ -9,6 +9,7 @@ import com.github.davidmoten.guavamini.Preconditions;
  */
 public class Solver {
 
+    private static final int NUM_PRESSURE_PROJECTION_ITERATIONS = 20;
     private static final double seawaterDensity = 1025.0; // kg/m³
     private static final double viscosity = 1.02;
     private static final double gravity = 9.81; // m/s²
@@ -69,6 +70,7 @@ public class Solver {
     }
 
     public void solve() {
+
         setObstaclePressureToAverageOfNeighbours();
 
         // Perform velocity advection and store in next
@@ -82,6 +84,7 @@ public class Solver {
         // Perform pressure projection and store in pNext
         projectPressure(p, div, pNext);
 
+        // swap p and pNext
         swapPressures();
 
         // Subtract the pressure gradient and store in u, v, w
@@ -89,11 +92,12 @@ public class Solver {
         subtractPressureGradient(vNext, p, v);
         subtractPressureGradient(wNext, p, w);
 
-        // Apply viscosity again after pressure projection
+        // Apply viscosity again after pressure projection, store in uNext, vNext, wNext
         applyViscosity(u, uNext);
         applyViscosity(v, vNext);
         applyViscosity(w, wNext);
 
+        // swap u and uNext, v and vNext, w and wNext
         swapVelocities();
     }
 
@@ -213,7 +217,7 @@ public class Solver {
     }
 
     private void projectPressure(double[][][] p, double[][][] div, double[][][] result) {
-        for (int iter = 0; iter < 20; iter++) {
+        for (int iter = 0; iter < NUM_PRESSURE_PROJECTION_ITERATIONS; iter++) {
             for (int i = 1; i < nx - 1; i++) {
                 for (int j = 1; j < ny - 1; j++) {
                     for (int k = 1; k < nz - 1; k++) {
@@ -259,7 +263,7 @@ public class Solver {
                     int neighborI = i + di;
                     int neighborJ = j + dj;
                     int neighborK = k + dk;
-                    if (isObstacle(neighborI, neighborJ, neighborK)) {
+                    if (!isObstacle(neighborI, neighborJ, neighborK)) {
                         pressureSum += p[neighborI][neighborJ][neighborK];
                         count++;
                     }
@@ -267,11 +271,11 @@ public class Solver {
             }
         }
 
-        // Return the average pressure of neighboring obstacle cells
+        // Return the average pressure of neighboring non-obstacle cells
         if (count > 0) {
             return pressureSum / count;
         } else {
-            return seawaterDensity * gravity * depth[k]; // If no neighboring obstacle cells, set to the desired initial
+            return seawaterDensity * gravity * depth[k]; // If no neighboring non-obstacle cells, set to the desired initial
                                                          // pressure value
         }
     }
