@@ -70,6 +70,7 @@ public class Solver {
     }
 
     public void solve() {
+        // Chorin's Projection method
 
         setObstaclePressureToAverageOfNeighbours();
 
@@ -92,13 +93,6 @@ public class Solver {
         subtractPressureGradient(vNext, p, v);
         subtractPressureGradient(wNext, p, w);
 
-        // Apply viscosity again after pressure projection, store in uNext, vNext, wNext
-        applyViscosity(u, uNext);
-        applyViscosity(v, vNext);
-        applyViscosity(w, wNext);
-
-        // swap u and uNext, v and vNext, w and wNext
-        swapVelocities();
     }
 
     private void swapPressures() {
@@ -106,35 +100,6 @@ public class Solver {
         double[][][] temp = p;
         p = pNext;
         pNext = temp;
-    }
-
-    private void swapVelocities() {
-        double[][][] temp;
-
-        temp = uNext;
-        uNext = u;
-        u = temp;
-
-        temp = vNext;
-        vNext = v;
-        v = temp;
-
-        temp = wNext;
-        wNext = w;
-        w = temp;
-    }
-
-    private void applyViscosity(double[][][] field, double[][][] result) {
-        for (int i = 1; i < nx - 1; i++) {
-            for (int j = 1; j < ny - 1; j++) {
-                for (int k = 1; k < nz - 1; k++) {
-                    double du2dx = (field[i + 1][j][k] - 2 * field[i][j][k] + field[i - 1][j][k]) / (dx * dx);
-                    double du2dy = (field[i][j + 1][k] - 2 * field[i][j][k] + field[i][j - 1][k]) / (dy * dy);
-                    double du2dz = (field[i][j][k + 1] - 2 * field[i][j][k] + field[i][j][k - 1]) / (dz[k] * dz[k]);
-                    result[i][j][k] = field[i][j][k] + viscosity * dt * (du2dx + du2dy + du2dz);
-                }
-            }
-        }
     }
 
     private void setObstaclePressureToAverageOfNeighbours() {
