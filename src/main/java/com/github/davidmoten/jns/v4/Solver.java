@@ -1,5 +1,7 @@
 package com.github.davidmoten.jns.v4;
 
+import com.github.davidmoten.guavamini.Preconditions;
+
 /**
  * Navier Stokes solver for incompressible fluid using Chorin's method. Created
  * via conversation with ChatGPT 3 so take with large grain of salt!
@@ -15,7 +17,6 @@ public class Solver {
     private double dx; // grid spacing in x-direction
     private double dy; // grid spacing in y-direction
     private double[] dz; // grid spacing in z-direction
-
 
     private double[][][] u; // x-velocity component
     private double[][][] v; // y-velocity component
@@ -36,6 +37,7 @@ public class Solver {
     private double[] depth;
 
     public Solver(int nx, int ny, int nz, double dx, double dy, double[] dz, boolean[][][] obstacle) {
+        Preconditions.checkArgument(dz.length == nz - 1);
         this.nx = nx;
         this.ny = ny;
         this.nz = nz;
@@ -58,9 +60,11 @@ public class Solver {
 
         depth = new double[nz];
         double sum = 0;
-        for (int i = 0; i < nz; i++) {
+        for (int i = 0; i < depth.length; i++) {
             depth[i] = sum;
-            sum += dz[i];
+            if (i < dz.length) {
+                sum += dz[i];
+            }
         }
     }
 
@@ -291,10 +295,10 @@ public class Solver {
         // Define the grid spacing in each direction
         double dx = 0.1; // grid spacing in x-direction
         double dy = 0.1; // grid spacing in y-direction
-        double[] dz = new double[nz]; // grid spacing in z-direction
+        double[] dz = new double[nz - 1]; // grid spacing in z-direction
 
         // Initialize the variable depth spacing
-        for (int k = 0; k < nz; k++) {
+        for (int k = 0; k < dz.length; k++) {
             dz[k] = 0.1 * (k + 1); // assuming linearly increasing spacing
         }
 
