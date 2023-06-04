@@ -165,8 +165,8 @@ public class Solver {
         // Update the pressure of the cell
         pNext[i][j][k] = next_p;
     }
-    
- // Calculate the pressure correction using the pressure correction method
+
+    // Calculate the pressure correction using the pressure correction method
     public void applyPressureCorrection() {
         // Compute the pressure correction for the entire grid
         for (int i = 1; i < gridSizeX - 1; i++) {
@@ -180,7 +180,6 @@ public class Solver {
         }
     }
 
-    
     private void applyPressureCorrection(int i, int j, int k) {
         // Retrieve the pressure of the neighboring cells
         double pEast = p[i + 1][j][k];
@@ -197,5 +196,7 @@ public class Solver {
 
         // Apply the pressure correction to the velocity field
         u[i][j][k] -= (pressureCorrection * timeStep) / fluidDensity;
+        v[i][j][k] -= (pressureCorrection * timeStep) / fluidDensity;
+        w[i][j][k] -= (pressureCorrection * timeStep) / fluidDensity;
     }
 }
