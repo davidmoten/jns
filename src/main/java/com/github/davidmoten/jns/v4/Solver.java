@@ -290,5 +290,6 @@ public class Solver {
 
         Solver solver = new Solver(nx, ny, nz, dx, dy, dz, new boolean[nx][ny][nz]);
         solver.solve();
+        
     }
 }
