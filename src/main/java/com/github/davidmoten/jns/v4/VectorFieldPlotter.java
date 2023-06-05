@@ -23,7 +23,7 @@ public class VectorFieldPlotter {
         // Define a function to plot
         Mapper mapper = new Mapper() {
             public double f(double x, double y) {
-                return 5 * Math.sin(x / 10) / (1 + Math.exp(-y/10));
+                return 5 * Math.sin(x / 10) / (1 + Math.exp(-y/35));
             }
         };
 

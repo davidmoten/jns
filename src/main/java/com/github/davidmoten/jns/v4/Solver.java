@@ -14,7 +14,7 @@ public class Solver {
     private static final double viscosity = 1.02;
     private static final double gravity = 9.81; // m/s²
 
-    private static final double dt = 0.01; // time step
+    private static final double dt = 0.0001; // time step
     private double dx; // grid spacing in x-direction
     private double dy; // grid spacing in y-direction
 
@@ -65,18 +65,33 @@ public class Solver {
                 sum += dz[i];
             }
         }
-        
+
         // uses pressure due to depth only
         initializePressure();
+    }
+
+    public void setLidDrivenCavityBoundary(double speed) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
+                u[i][j][0] = 1;
+            }
+        }
+        for (int i = 0; i < nx; i += 1) {
+            for (int j = 0; j < ny; j++) {
+                for (int k = 1; k < nz; k++) {
+                    if (i == 0 || i == nx - 1 || j == 0 || j == ny - 1 || k == nz - 1) {
+                        obstacle[i][j][k] = true;
+                    }
+                }
+            }
+        }
     }
 
     private void initializePressure() {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
-                    if (!obstacle[i][j][k]) {
-                        p[i][j][k] = seawaterDensity * gravity * depth[k];
-                    }
+                    p[i][j][k] = seawaterDensity * gravity * depth[k];
                 }
             }
         }
@@ -88,9 +103,9 @@ public class Solver {
         setObstaclePressureToAverageOfNeighbours();
 
         // Perform velocity advection and store in *next
-        advect(u, uNext);
-        advect(v, vNext);
-        advect(w, wNext);
+        advect(u, uNext, false);
+        advect(v, vNext, false);
+        advect(w, wNext, true);
 
         // Calculate the divergence of the velocity field and store in div
         computeDivergence(uNext, vNext, wNext, div);
@@ -102,9 +117,9 @@ public class Solver {
         swapPressures();
 
         // Subtract the pressure gradient and store in u, v, w
-        subtractPressureGradient(uNext, p, u);
-        subtractPressureGradient(vNext, p, v);
-        subtractPressureGradient(wNext, p, w);
+        subtractPressureGradient(uNext, p, false, u);
+        subtractPressureGradient(vNext, p, false, v);
+        subtractPressureGradient(wNext, p, true, w);
 
     }
 
@@ -127,13 +142,13 @@ public class Solver {
         }
     }
 
-    private void advect(double[][][] field, double[][][] result) {
+    private void advect(double[][][] field, double[][][] result, boolean includeGravity) {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     if (!obstacle[i][j][k]) {
-                        double deltaZ = (depth[k+1] - depth[k-1])/2;
-                        
+                        double deltaZ = (depth[k + 1] - depth[k - 1]) / 2;
+
                         double x = i - dt * u[i][j][k] / dx;
                         double y = j - dt * v[i][j][k] / dy;
                         double z = k - dt * w[i][j][k] / deltaZ;
@@ -159,7 +174,8 @@ public class Solver {
                                         + v[i][j][k] * (interpolatedValue - trilinearInterpolate(v, x, y, z)) / dy
                                         + w[i][j][k] * (interpolatedValue - trilinearInterpolate(w, x, y, z)) / deltaZ)
                                 + dt * viscosity * (d2udx2 + d2udy2 + d2udz2 + d2vdx2 + d2vdy2 + d2vdz2 + d2wdx2
-                                        + d2wdy2 + d2wdz2);
+                                        + d2wdy2 + d2wdz2)
+                                - (includeGravity ? dt * gravity : 0);
                     }
                 }
             }
@@ -190,7 +206,7 @@ public class Solver {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     div[i][j][k] = (u[i + 1][j][k] - u[i - 1][j][k] + v[i][j + 1][k] - v[i][j - 1][k] + w[i][j][k + 1]
-                            - w[i][j][k - 1]) / (2 * dx);
+                            - w[i][j][k - 1]) / (2 * dx) - dt * gravity;
                 }
             }
         }
@@ -211,15 +227,17 @@ public class Solver {
         }
     }
 
-    private void subtractPressureGradient(double[][][] field, double[][][] p, double[][][] result) {
+    private void subtractPressureGradient(double[][][] field, double[][][] p, boolean includeGravity,
+            double[][][] result) {
         for (int i = 1; i < nx - 1; i++) {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     if (!obstacle[i][j][k]) {
-                        double deltaZ = (depth[k+1] - depth[k-1])/2;
+                        double deltaZ = (depth[k + 1] - depth[k - 1]) / 2;
                         result[i][j][k] = field[i][j][k] - 0.5 * dt * (p[i + 1][j][k] - p[i - 1][j][k]) / dx
                                 - 0.5 * dt * (p[i][j + 1][k] - p[i][j - 1][k]) / dy
-                                - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / deltaZ;
+                                - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / deltaZ
+                                - (includeGravity ? dt * gravity : 0);
                     }
                 }
             }
@@ -285,11 +303,20 @@ public class Solver {
 
         // Initialize the variable depth spacing
         for (int k = 0; k < dz.length; k++) {
-            dz[k] = 0.1 * (k + 1); // assuming linearly increasing spacing
+            dz[k] = 0.1;
         }
 
         Solver solver = new Solver(nx, ny, nz, dx, dy, dz, new boolean[nx][ny][nz]);
-        solver.solve();
-        
+        solver.setLidDrivenCavityBoundary(1);
+        for (int i = 0; i < 1; i++) {
+            solver.solve();
+        }
+        for (int i = 1; i < nx - 1; i++) {
+            for (int j = 1; j < ny - 1; j++) {
+                for (int k = 1; k < nz - 1; k++) {
+                    System.out.println(i + ", " + j + ", " + k + ": " + solver.u[i][j][k]);
+                }
+            }
+        }
     }
 }
