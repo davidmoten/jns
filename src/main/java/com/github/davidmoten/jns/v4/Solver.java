@@ -67,6 +67,21 @@ public class Solver {
                 sum += dz[i];
             }
         }
+        
+        // uses pressure due to depth only
+        initializePressure();
+    }
+
+    private void initializePressure() {
+        for (int i = 1; i < nx - 1; i++) {
+            for (int j = 1; j < ny - 1; j++) {
+                for (int k = 1; k < nz - 1; k++) {
+                    if (!obstacle[i][j][k]) {
+                        p[i][j][k] = seawaterDensity * gravity * depth[k];
+                    }
+                }
+            }
+        }
     }
 
     public void solve() {
@@ -74,7 +89,7 @@ public class Solver {
 
         setObstaclePressureToAverageOfNeighbours();
 
-        // Perform velocity advection and store in next
+        // Perform velocity advection and store in *next
         advect(u, uNext);
         advect(v, vNext);
         advect(w, wNext);
@@ -119,30 +134,32 @@ public class Solver {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     if (!obstacle[i][j][k]) {
+                        double deltaZ = (depth[k+1] - depth[k-1])/2;
+                        
                         double x = i - dt * u[i][j][k] / dx;
                         double y = j - dt * v[i][j][k] / dy;
-                        double z = k - dt * w[i][j][k] / dz[k];
+                        double z = k - dt * w[i][j][k] / deltaZ;
 
                         double interpolatedValue = trilinearInterpolate(field, x, y, z);
 
                         // Calculate the second-order derivatives for viscosity
                         double d2udx2 = (u[i + 1][j][k] - 2 * u[i][j][k] + u[i - 1][j][k]) / (dx * dx);
                         double d2udy2 = (u[i][j + 1][k] - 2 * u[i][j][k] + u[i][j - 1][k]) / (dy * dy);
-                        double d2udz2 = (u[i][j][k + 1] - 2 * u[i][j][k] + u[i][j][k - 1]) / (dz[k] * dz[k]);
+                        double d2udz2 = (u[i][j][k + 1] - 2 * u[i][j][k] + u[i][j][k - 1]) / (deltaZ * deltaZ);
 
                         double d2vdx2 = (v[i + 1][j][k] - 2 * v[i][j][k] + v[i - 1][j][k]) / (dx * dx);
                         double d2vdy2 = (v[i][j + 1][k] - 2 * v[i][j][k] + v[i][j - 1][k]) / (dy * dy);
-                        double d2vdz2 = (v[i][j][k + 1] - 2 * v[i][j][k] + v[i][j][k - 1]) / (dz[k] * dz[k]);
+                        double d2vdz2 = (v[i][j][k + 1] - 2 * v[i][j][k] + v[i][j][k - 1]) / (deltaZ * deltaZ);
 
                         double d2wdx2 = (w[i + 1][j][k] - 2 * w[i][j][k] + w[i - 1][j][k]) / (dx * dx);
                         double d2wdy2 = (w[i][j + 1][k] - 2 * w[i][j][k] + w[i][j - 1][k]) / (dy * dy);
-                        double d2wdz2 = (w[i][j][k + 1] - 2 * w[i][j][k] + w[i][j][k - 1]) / (dz[k] * dz[k]);
+                        double d2wdz2 = (w[i][j][k + 1] - 2 * w[i][j][k] + w[i][j][k - 1]) / (deltaZ * deltaZ);
 
                         // Apply advection with viscosity
                         result[i][j][k] = interpolatedValue
                                 - dt * (u[i][j][k] * (interpolatedValue - trilinearInterpolate(u, x, y, z)) / dx
                                         + v[i][j][k] * (interpolatedValue - trilinearInterpolate(v, x, y, z)) / dy
-                                        + w[i][j][k] * (interpolatedValue - trilinearInterpolate(w, x, y, z)) / dz[k])
+                                        + w[i][j][k] * (interpolatedValue - trilinearInterpolate(w, x, y, z)) / deltaZ)
                                 + dt * viscosity * (d2udx2 + d2udy2 + d2udz2 + d2vdx2 + d2vdy2 + d2vdz2 + d2wdx2
                                         + d2wdy2 + d2wdz2);
                     }
@@ -201,9 +218,10 @@ public class Solver {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     if (!obstacle[i][j][k]) {
+                        double deltaZ = (depth[k+1] - depth[k-1])/2;
                         result[i][j][k] = field[i][j][k] - 0.5 * dt * (p[i + 1][j][k] - p[i - 1][j][k]) / dx
                                 - 0.5 * dt * (p[i][j + 1][k] - p[i][j - 1][k]) / dy
-                                - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / dz[k];
+                                - 0.5 * dt * (p[i][j][k + 1] - p[i][j][k - 1]) / deltaZ;
                     }
                 }
             }
@@ -240,7 +258,8 @@ public class Solver {
         if (count > 0) {
             return pressureSum / count;
         } else {
-            return seawaterDensity * gravity * depth[k]; // If no neighboring non-obstacle cells, set to the desired initial
+            return seawaterDensity * gravity * depth[k]; // If no neighboring non-obstacle cells, set to the desired
+                                                         // initial
                                                          // pressure value
         }
     }
