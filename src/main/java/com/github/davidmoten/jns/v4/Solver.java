@@ -17,7 +17,6 @@ public class Solver {
     private static final double dt = 0.01; // time step
     private double dx; // grid spacing in x-direction
     private double dy; // grid spacing in y-direction
-    private double[] dz; // grid spacing in z-direction
 
     private double[][][] u; // x-velocity component
     private double[][][] v; // y-velocity component
@@ -44,7 +43,6 @@ public class Solver {
         this.nz = nz;
         this.dx = dx;
         this.dy = dy;
-        this.dz = dz;
         this.obstacle = obstacle;
 
         u = new double[nx][ny][nz];
