@@ -4,7 +4,8 @@ import com.github.davidmoten.guavamini.Preconditions;
 
 /**
  * Navier Stokes solver for incompressible fluid using Chorin's method. Created
- * via conversation with ChatGPT 3 so take with large grain of salt!
+ * via conversation with ChatGPT 3 and looks to be very wrong so take with large
+ * grain of salt!
  *
  */
 public class Solver {
@@ -102,6 +103,8 @@ public class Solver {
 
         setObstaclePressureToAverageOfNeighbours();
 
+        printMaxesByDepth();
+
         // Perform velocity advection and store in *next
         advect(u, uNext, false);
         advect(v, vNext, false);
@@ -175,7 +178,7 @@ public class Solver {
                                         + w[i][j][k] * (interpolatedValue - trilinearInterpolate(w, x, y, z)) / deltaZ)
                                 + dt * viscosity * (d2udx2 + d2udy2 + d2udz2 + d2vdx2 + d2vdy2 + d2vdz2 + d2wdx2
                                         + d2wdy2 + d2wdz2)
-                                - (includeGravity ? dt * gravity : 0);
+                                + (includeGravity ? dt * gravity : 0);
                     }
                 }
             }
@@ -206,7 +209,7 @@ public class Solver {
             for (int j = 1; j < ny - 1; j++) {
                 for (int k = 1; k < nz - 1; k++) {
                     div[i][j][k] = (u[i + 1][j][k] - u[i - 1][j][k] + v[i][j + 1][k] - v[i][j - 1][k] + w[i][j][k + 1]
-                            - w[i][j][k - 1]) / (2 * dx) - dt * gravity;
+                            - w[i][j][k - 1]) / (2 * dx);
                 }
             }
         }
@@ -291,6 +294,21 @@ public class Solver {
         return obstacle[i][j][k];
     }
 
+    public void printMaxesByDepth() {
+        for (int k = 0; k < nz; k++) {
+            double max = 0;
+            for (int i = 1; i < nx - 1; i++) {
+                for (int j = 1; j < ny - 1; j++) {
+                    double x = Math.abs(u[i][j][k]);
+                    if (x > max) {
+                        max = x;
+                    }
+                }
+            }
+            System.out.println("k=" + k + ", max=" + max);
+        }
+    }
+
     public static void main(String[] args) {
         int nx = 10; // number of grid points in x-direction
         int ny = 10; // number of grid points in y-direction
@@ -307,16 +325,11 @@ public class Solver {
         }
 
         Solver solver = new Solver(nx, ny, nz, dx, dy, dz, new boolean[nx][ny][nz]);
-        solver.setLidDrivenCavityBoundary(1);
         for (int i = 0; i < 1; i++) {
+            solver.setLidDrivenCavityBoundary(1);
             solver.solve();
         }
-        for (int i = 1; i < nx - 1; i++) {
-            for (int j = 1; j < ny - 1; j++) {
-                for (int k = 1; k < nz - 1; k++) {
-                    System.out.println(i + ", " + j + ", " + k + ": " + solver.u[i][j][k]);
-                }
-            }
-        }
+        solver.printMaxesByDepth();
     }
+
 }
